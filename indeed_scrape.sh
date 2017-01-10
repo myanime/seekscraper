@@ -14,8 +14,6 @@ scrapy crawl seek_2 -o $MYPATH/$COUNTRY/static/output/2$CURRENT_FILENAME.json
 sleep 2
 scrapy crawl seek_3 -o $MYPATH/$COUNTRY/static/output/3$CURRENT_FILENAME.json
 sleep 2
-scrapy crawl seek_ -o $MYPATH/$COUNTRY/static/output/$CURRENT_FILENAME.json
-sleep 2
 scrapy crawl seek_4 -o $MYPATH/$COUNTRY/static/output/4$CURRENT_FILENAME.json
 sleep 2
 scrapy crawl seek_5 -o $MYPATH/$COUNTRY/static/output/5$CURRENT_FILENAME.json
