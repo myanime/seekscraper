@@ -1,3 +1,4 @@
+#LOCALVERSION
 CURRENT_FILENAME=new_jobs
 MYDATE=$(date +"%d_%m_%Y")
 MYPATH=/home/ubuntu
