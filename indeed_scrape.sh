@@ -35,6 +35,9 @@ scrapy crawl seek_12 -o $MYPATH/$COUNTRY/static/output/12$CURRENT_FILENAME.json
 sleep 2
 scrapy crawl seek_13 -o $MYPATH/$COUNTRY/static/output/13$CURRENT_FILENAME.json
 sleep 2
+scrapy crawl seek_14 -o $MYPATH/$COUNTRY/static/output/14$CURRENT_FILENAME.json
+sleep 2
+
 cd $MYPATH/$COUNTRY/static/output
 sudo python deduplicate.py
 sleep 5
