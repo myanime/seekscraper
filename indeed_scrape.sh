@@ -9,6 +9,10 @@ date +%d-%m-%Y_%H:%M > date
 sleep 5
 echo Starting_Scrapy
 cd $MYPATH/$COUNTRY/
+scrapy crawl seek_13 -o $MYPATH/$COUNTRY/static/output/13$CURRENT_FILENAME.json
+sleep 2
+scrapy crawl seek_14 -o $MYPATH/$COUNTRY/static/output/14$CURRENT_FILENAME.json
+sleep 2
 scrapy crawl seek_1 -o $MYPATH/$COUNTRY/static/output/1$CURRENT_FILENAME.json
 sleep 2
 scrapy crawl seek_2 -o $MYPATH/$COUNTRY/static/output/2$CURRENT_FILENAME.json
@@ -32,10 +36,6 @@ sleep 2
 scrapy crawl seek_11 -o $MYPATH/$COUNTRY/static/output/11$CURRENT_FILENAME.json
 sleep 2
 scrapy crawl seek_12 -o $MYPATH/$COUNTRY/static/output/12$CURRENT_FILENAME.json
-sleep 2
-scrapy crawl seek_13 -o $MYPATH/$COUNTRY/static/output/13$CURRENT_FILENAME.json
-sleep 2
-scrapy crawl seek_14 -o $MYPATH/$COUNTRY/static/output/14$CURRENT_FILENAME.json
 sleep 2
 
 cd $MYPATH/$COUNTRY/static/output

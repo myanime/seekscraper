@@ -3,7 +3,7 @@ from pandas.io.json import json_normalize
 import time
 import os
 
-for x in range(1, 14):
+for x in range(1, 15):
     with open('{0}new_jobs.json'.format(x), 'r') as data:
         all_jobs = json.load(data)
 
@@ -18,7 +18,7 @@ with open('seek.json', 'r') as data:
     seek = json.load(data)
 
 all_jobs = None
-for x in range(1, 14):
+for x in range(1, 15):
     with open('{0}a_new_jobs.json'.format(x), 'r') as data:
         new_jobs = json.load(data)
         print len(new_jobs), 'file:', x
@@ -45,5 +45,5 @@ df.to_csv(filename, encoding='utf-8')
 with open('seek.json', 'w') as data:
     json.dump(unique, data)
 
-for x in range(1, 14):
+for x in range(1, 15):
     os.remove('./{x}a_new_jobs.json'.format(x))
