@@ -46,4 +46,4 @@ with open('seek.json', 'w') as data:
     json.dump(unique, data)
 
 for x in range(1, 15):
-    os.remove('./{x}a_new_jobs.json'.format(x))
+    os.remove('./{}a_new_jobs.json'.format(x))
