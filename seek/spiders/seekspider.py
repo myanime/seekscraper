@@ -437,11 +437,7 @@ class URLScraper13(scrapy.Spider):
     postcodes = [line.strip('\n') for line in open('./seek/spiders/postcodes')]
     all_urls = []
     for zip in postcodes:
-        all_urls.append('https://api.seek.com.au/v2/jobs/search?salaryRange=0-10000&where={0}&dateRange=1'.format(zip))
-        all_urls.append(
-            'https://api.seek.com.au/v2/jobs/search?salaryRange=10000-20000&where={0}&dateRange=1'.format(zip))
-        all_urls.append(
-            'https://api.seek.com.au/v2/jobs/search?salaryRange=20000-30000&where={0}&dateRange=1'.format(zip))
+
         all_urls.append(
             'https://api.seek.com.au/v2/jobs/search?salaryRange=30000-40000&where={0}&dateRange=1'.format(zip))
         all_urls.append(
