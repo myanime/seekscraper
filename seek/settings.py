@@ -13,7 +13,7 @@ BOT_NAME = 'seek'
 
 SPIDER_MODULES = ['seek.spiders']
 NEWSPIDER_MODULE = 'seek.spiders'
-
+DOWNLOAD_DELAY = 0.25 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'seek (+http://www.yourdomain.com)'
