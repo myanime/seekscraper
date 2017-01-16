@@ -4,6 +4,18 @@ import time
 from pandas.io.json import json_normalize
 
 def main():
+    start_urls = ["https://www.seek.com.au/job/" + line.rstrip('\n') for line in open('./seek/spiders/joblist', 'r')]
+    print start_urls
+    for url in start_urls:
+    # def worker(url):
+        driver = webdriver.Chrome(executable_path='./chromedriver')
+        driver.get(url)
+        element = driver.find_element_by_css_selector('div.templatetext')
+        text = element.text
+        print text
+
+
+def main3():
     # driver.findElement(By.cssSelector("a[href*='long']")).click();
     driver = webdriver.Chrome(executable_path="./chromedriver")
     jobids=[]

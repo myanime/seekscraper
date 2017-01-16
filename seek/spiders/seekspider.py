@@ -2,7 +2,10 @@ import scrapy
 import time
 from seek.items import SeekItem
 from bs4 import BeautifulSoup
-
+from selenium import webdriver
+import json
+import time
+from pandas.io.json import json_normalize
 
 '''
 {
@@ -64,6 +67,146 @@ from bs4 import BeautifulSoup
   ]
 }
 '''
+class SeleniumScraper(scrapy.Spider):
+    start_urls = ['https://www.google.com']
+    name = "selenium_seek"
+    def parse(self, response):
+        seek_ids = [line.rstrip('\n') for line in open('./seek/spiders/joblist', 'r')]
+        driver = webdriver.Chrome(executable_path='./chromedriver')
+        for id in seek_ids:
+            url = "https://www.seek.com.au/job/" + id
+            driver.get(url)
+            element = driver.find_element_by_css_selector('div.templatetext')
+            text = element.text
+            item = SeekItem()
+            item['text'] = text
+            item['url'] = url
+
+            apiurl = 'https://api.seek.com.au/v2/jobs/search?jobId={}'.format(id)
+            request = scrapy.Request(apiurl, callback=self.get_json)
+            request.meta['item'] = item
+            yield request
+
+    def get_json(self, response):
+        jsonresponse = json.loads(response.body_as_unicode())
+        if jsonresponse['totalCount'] > 0:
+            data = jsonresponse['data'][0]
+            # import time
+            # time.sleep(10)
+            item = response.meta['item']
+            # df = json_normalize(data)
+            # item['name'] = data #df.to_json()
+            try:
+                print data['advertiser']['id']
+            except:
+                pass
+            print "############################"
+            try:
+                item['advertiser_id'] = data['advertiser']['id']
+            except:
+                pass
+            try:
+                item['advertiser_description'] = data['advertiser']['description']
+            except:
+                pass
+            try:
+                item['suburbWhereValue'] = data['suburbWhereValue']
+            except:
+                pass
+            try:
+                item['classification_description'] = data['classification']['description']
+            except:
+                pass
+            try:
+                item['subClassification_description'] = data['subClassification']['description']
+            except:
+                pass
+            try:
+                item['logo_ID'] = data['logo']['id']
+            except:
+                pass
+            try:
+                item['logo_description'] = data['logo']['description']
+            except:
+                pass
+            try:
+                item['listingDate'] = data['listingDate']
+            except:
+                pass
+            try:
+                item['id'] = data['id']
+            except:
+                pass
+            try:
+                item['title'] = data['title']
+            except:
+                pass
+            try:
+                item['location'] = data['location']
+            except:
+                pass
+            try:
+                item['locationWhereValue'] = data['locationWhereValue']
+            except:
+                pass
+            try:
+                item['teaser'] = data['teaser']
+            except:
+                pass
+            try:
+                item['workType'] = data['workType']
+            except:
+                pass
+            try:
+                item['salary'] = data['salary']
+            except:
+                pass
+            try:
+                item['areaWhereValue'] = data['areaWhereValue']
+            except:
+                pass
+            try:
+                item['area'] = data['area']
+            except:
+                pass
+
+            return item
+
+
+class TextScraper(scrapy.Spider):
+    name = 'text_scraper'
+    start_urls = ["https://www.seek.com.au/job/" + line.rstrip('\n') for line in open('./seek/spiders/joblist', 'r')]
+
+    def parse(self, response):
+        item = SeekItem()
+        text = response.css('div.templatetext').extract_first()
+        soup = BeautifulSoup(text)
+        item['text'] = soup.get_text()
+        item['name'] = response.url
+        yield item
+
+class IDScraper(scrapy.Spider):
+    name = "seek_id"
+    seek_pages = []
+    for page in range(1, 500):
+        seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?daterange=3&page={}'.format(page))
+    start_urls = seek_pages
+
+    def parse(self, response):
+        links = response.css("a[href*='/job/']").extract()
+        for link in links:
+            soup = BeautifulSoup(link)
+            job = soup.find('a', href=True)['href']
+            job = job.replace('/job/', '')
+            job = job.split('?')[0]
+            print job
+            item = SeekItem()
+            item['name'] = job
+            yield item
+
+            # request = scrapy.Request('https://api.seek.com.au/v2/jobs/search?jobId={}'.format(job),
+            #                          callback=self.get_name)
+            # yield request
 
 class URLScraper(scrapy.Spider):
     name = "seek_money"
