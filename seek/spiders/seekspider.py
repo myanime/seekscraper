@@ -1343,7 +1343,7 @@ class URLScraperIntegrated(scrapy.Spider):
     name = 'seekIntegrated'
     seek_pages=[]
     for page in range(1, 500):
-        seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?daterange=3&page={}'.format(page))
+        seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?daterange=1&page={}'.format(page))
     start_urls = seek_pages
 
     def parse(self, response):
