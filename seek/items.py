@@ -30,6 +30,8 @@ class SeekItem(scrapy.Item):
     salary = scrapy.Field()
     areaWhereValue = scrapy.Field()
     area = scrapy.Field()
+    original_link_telephones = scrapy.Field()
+    original_link_emails = scrapy.Field()
 
 
 class JobID(scrapy.Item):
