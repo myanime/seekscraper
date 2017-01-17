@@ -6,6 +6,64 @@ from selenium import webdriver
 import json
 import time
 from pandas.io.json import json_normalize
+import random
+from selenium.webdriver.chrome.options import Options
+import zipfile
+
+manifest_json = """
+{
+    "version": "1.0.0",
+    "manifest_version": 2,
+    "name": "Chrome Proxy",
+    "permissions": [
+        "proxy",
+        "tabs",
+        "unlimitedStorage",
+        "storage",
+        "<all_urls>",
+        "webRequest",
+        "webRequestBlocking"
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "minimum_chrome_version":"22.0.0"
+}
+"""
+
+background_js = """
+var config = {
+        mode: "fixed_servers",
+        rules: {
+          singleProxy: {
+            scheme: "http",
+            host: "schlupfi.de",
+            port: parseInt(3128)
+          },
+          bypassList: ["foobar.com"]
+        }
+      };
+
+chrome.proxy.settings.set({value: config, scope: "regular"}, function() {});
+
+function callbackFn(details) {
+    return {
+        authCredentials: {
+            username: "user1",
+            password: "indeed"
+        }
+    };
+}
+
+chrome.webRequest.onAuthRequired.addListener(
+            callbackFn,
+            {urls: ["<all_urls>"]},
+            ['blocking']
+);
+"""
+
+
+
 
 '''
 {
@@ -67,17 +125,65 @@ from pandas.io.json import json_normalize
   ]
 }
 '''
-class SeleniumScraper(scrapy.Spider):
+class SeleniumSlow(scrapy.Spider):
     start_urls = ['https://www.google.com']
-    name = "selenium_seek"
+    name = "selenium_slow"
     def parse(self, response):
         seek_ids = [line.rstrip('\n') for line in open('./seek/spiders/joblist', 'r')]
-        driver = webdriver.Chrome(executable_path='./chromedriver')
+        # driver = webdriver.Chrome(executable_path='./chromedriver')
+        # driver = webdriver.Chrome(executable_path='./chromedriver')
+
+        # chrome_options = webdriver.ChromeOptions()
+        # chrome_options.add_argument('--proxy-server=' + 'schlupfi.de:3128')
+        # driver = webdriver.Chrome(executable_path="./chromedriver", chrome_options=chrome_options)
+        # proxyusername = "user1"
+        # proxypassword = "indeed"
+        # driver.get('https://{0}:{1}@www.seek.com.au'.format(proxyusername,proxypassword))
+
+        def loadchrome():
+            pluginfile = 'proxy_auth_plugin.zip'
+
+            with zipfile.ZipFile(pluginfile, 'w') as zp:
+                zp.writestr("manifest.json", manifest_json)
+                zp.writestr("background.js", background_js)
+
+            co = Options()
+            co.add_argument("--start-maximized")
+            co.add_extension(pluginfile)
+
+            driver = webdriver.Chrome("./chromedriver", chrome_options=co)
+            driver.get("http://www.google.com")
+            return driver
+        driver = loadchrome()
+
+
+        time.sleep(10)
+
         for id in seek_ids:
             url = "https://www.seek.com.au/job/" + id
-            driver.get(url)
-            element = driver.find_element_by_css_selector('div.templatetext')
-            text = element.text
+            try:
+                # wait = random.randrange(10,15)
+                # time.sleep(wait)
+                driver.get(url)
+                element = driver.find_element_by_css_selector('div.templatetext')
+                text = element.text
+            except:
+                text = ''
+                try:
+                    if "blocked access" in driver.page_source:
+                        with open('error.txt', 'a') as file:
+                            file.write("Error\n")
+                            file.write(url)
+                            file.write('\n')
+                        time.sleep(30)
+                        driver.quit()
+                        time.sleep(5)
+                        driver = loadchrome()
+
+                except:
+                    pass
+
+
             item = SeekItem()
             item['text'] = text
             item['url'] = url
@@ -170,6 +276,114 @@ class SeleniumScraper(scrapy.Spider):
             except:
                 pass
 
+            return item
+
+
+class SeleniumScraper(scrapy.Spider):
+    start_urls = ['https://www.google.com']
+    name = "selenium_seek"
+    def parse(self, response):
+        seek_ids = [line.rstrip('\n') for line in open('./seek/spiders/joblist', 'r')]
+        driver = webdriver.Chrome(executable_path='./chromedriver')
+        for id in seek_ids:
+            url = "https://www.seek.com.au/job/" + id
+            try:
+                driver.get(url)
+                element = driver.find_element_by_css_selector('div.templatetext')
+                text = element.text
+            except:
+                text = ''
+            item = SeekItem()
+            item['text'] = text
+            item['url'] = url
+
+            apiurl = 'https://api.seek.com.au/v2/jobs/search?jobId={}'.format(id)
+            request = scrapy.Request(apiurl, callback=self.get_json)
+            request.meta['item'] = item
+            yield request
+
+    def get_json(self, response):
+        jsonresponse = json.loads(response.body_as_unicode())
+        if jsonresponse['totalCount'] > 0:
+            data = jsonresponse['data'][0]
+            # import time
+            # time.sleep(10)
+            item = response.meta['item']
+            # df = json_normalize(data)
+            # item['name'] = data #df.to_json()
+            try:
+                print data['advertiser']['id']
+            except:
+                pass
+            print "############################"
+            try:
+                item['advertiser_id'] = data['advertiser']['id']
+            except:
+                pass
+            try:
+                item['advertiser_description'] = data['advertiser']['description']
+            except:
+                pass
+            try:
+                item['suburbWhereValue'] = data['suburbWhereValue']
+            except:
+                pass
+            try:
+                item['classification_description'] = data['classification']['description']
+            except:
+                pass
+            try:
+                item['subClassification_description'] = data['subClassification']['description']
+            except:
+                pass
+            try:
+                item['logo_ID'] = data['logo']['id']
+            except:
+                pass
+            try:
+                item['logo_description'] = data['logo']['description']
+            except:
+                pass
+            try:
+                item['listingDate'] = data['listingDate']
+            except:
+                pass
+            try:
+                item['id'] = data['id']
+            except:
+                pass
+            try:
+                item['title'] = data['title']
+            except:
+                pass
+            try:
+                item['location'] = data['location']
+            except:
+                pass
+            try:
+                item['locationWhereValue'] = data['locationWhereValue']
+            except:
+                pass
+            try:
+                item['teaser'] = data['teaser']
+            except:
+                pass
+            try:
+                item['workType'] = data['workType']
+            except:
+                pass
+            try:
+                item['salary'] = data['salary']
+            except:
+                pass
+            try:
+                item['areaWhereValue'] = data['areaWhereValue']
+            except:
+                pass
+            try:
+                item['area'] = data['area']
+            except:
+                pass
             return item
 
 

@@ -6,14 +6,21 @@ from pandas.io.json import json_normalize
 def main():
     start_urls = ["https://www.seek.com.au/job/" + line.rstrip('\n') for line in open('./seek/spiders/joblist', 'r')]
     print start_urls
+    driver = webdriver.Chrome(executable_path='./chromedriver')
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--proxy-server=' + 'schlupfi.de:3128')
+    driver = webdriver.Chrome(executable_path="./chromedriver", chrome_options=chrome_options)
+    driver.get('https://www.seek.com.au')
+    time.sleep(10)
     for url in start_urls:
     # def worker(url):
-        driver = webdriver.Chrome(executable_path='./chromedriver')
-        driver.get(url)
-        element = driver.find_element_by_css_selector('div.templatetext')
-        text = element.text
-        print text
-
+        try:
+            driver.get(url)
+            element = driver.find_element_by_css_selector('div.templatetext')
+            text = element.text
+            print text
+        except:
+            pass
 
 def main3():
     # driver.findElement(By.cssSelector("a[href*='long']")).click();

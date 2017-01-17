@@ -12,8 +12,8 @@ with open('seek.json', 'r') as data:
 unique = seek
 
 df=json_normalize(unique)
-# df = df.drop_duplicates('name.id')
-# df = df.sort('name.id')
+df = df.drop_duplicates('id')
+df = df.sort('id')
 today=time.strftime('_%d_%m_%Y')
 filename='./transfer/seek_final{0}.csv'.format(today)
 df.to_csv(filename, encoding='utf-8')
