@@ -1,6 +1,6 @@
 import scrapy
 import time
-from seek.items import SeekItem
+from seek.items import SeekItem, JobID
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import json
@@ -9,7 +9,7 @@ from pandas.io.json import json_normalize
 import random
 from selenium.webdriver.chrome.options import Options
 import zipfile
-
+import re
 manifest_json = """
 {
     "version": "1.0.0",
@@ -127,19 +127,29 @@ chrome.webRequest.onAuthRequired.addListener(
 '''
 class SeleniumSlow(scrapy.Spider):
     start_urls = ['https://www.google.com']
-    name = "selenium_slow"
+    name = "gather_idlist"
+
+    seek_pages = []
+    for page in range(1, 500):
+        seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?daterange=3&page={}'.format(page))
+    start_urls = seek_pages
+
     def parse(self, response):
-        seek_ids = [line.rstrip('\n') for line in open('./seek/spiders/joblist', 'r')]
-        # driver = webdriver.Chrome(executable_path='./chromedriver')
-        # driver = webdriver.Chrome(executable_path='./chromedriver')
+        links = response.css("a[href*='/job/']").extract()
+        for link in links:
+            soup = BeautifulSoup(link)
+            job = soup.find('a', href=True)['href']
+            job = job.replace('/job/', '')
+            job = job.split('?')[0]
+            print job
+            item = JobID()
+            item['url'] = job
+            yield item
 
-        # chrome_options = webdriver.ChromeOptions()
-        # chrome_options.add_argument('--proxy-server=' + 'schlupfi.de:3128')
-        # driver = webdriver.Chrome(executable_path="./chromedriver", chrome_options=chrome_options)
-        # proxyusername = "user1"
-        # proxypassword = "indeed"
-        # driver.get('https://{0}:{1}@www.seek.com.au'.format(proxyusername,proxypassword))
 
+
+    def parse(self, response):
+        seek_ids = [line.rstrip('\n') for line in open('./static/output/joblist', 'r')]
         def loadchrome():
             pluginfile = 'proxy_auth_plugin.zip'
 
@@ -155,8 +165,6 @@ class SeleniumSlow(scrapy.Spider):
             driver.get("http://www.google.com")
             return driver
         driver = loadchrome()
-
-
         time.sleep(10)
 
         for id in seek_ids:
@@ -167,6 +175,50 @@ class SeleniumSlow(scrapy.Spider):
                 driver.get(url)
                 element = driver.find_element_by_css_selector('div.templatetext')
                 text = element.text
+
+                ############################################
+                # EMAIL TELEPHONE PARSER
+                original_link_telephones = None
+                original_link_emails = None
+                item['original_link_telephones'] = None
+                item['original_link_emails'] = None
+
+                emails = []
+                telephone_numbers = []
+                try:
+                    re_email = r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+"
+                    re1 = r'(0[1-8]{1,1} [0-9]{3,5} [0-9]{3,5})'
+                    re2 = r'(\([0-9]{2,2}\).[0-9]{3,5}.[0-9]{3,5})'
+                    re3 = r'\+61.[0-9]{1,1}.[0-9]{2,5}.[0-9]{2,5}.[0-9]{2,5}'
+
+                    e1 = re.search(re_email, text, re.I)
+                    if e1:
+                        emails.append(e1.group())
+                    t1 = re.search(re1, text, re.I)
+                    t2 = re.search(re2, text, re.I)
+                    t3 = re.search(re3, text, re.I)
+                    if t1:
+                        telephone_numbers.append(t1.group())
+                    if t2:
+                        telephone_numbers.append(t2.group())
+                    if t3:
+                        telephone_numbers.append(t3.group())
+                    try:
+                        item['original_link_emails'] = emails[0]
+                        # item['original_link_emails2'] = emails[1]
+                        # item['original_link_emails3'] = emails[2]
+                    except:
+                        pass
+                    try:
+                        item['original_link_telephones'] = telephone_numbers[0]
+                        # item['original_link_telephones2'] = telephone_numbers[1]
+                        # item['original_link_telephones3'] = telephone_numbers[2]
+                    except:
+                        pass
+                except:
+                    pass
+                ######################################
+
             except:
                 text = ''
                 try:
