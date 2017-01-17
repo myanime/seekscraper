@@ -15,7 +15,7 @@ scrapy crawl joblist -o $MYPATH/$COUNTRY/static/output/joblist.csv
 sleep 2
 python filerenamer.py
 sleep 5
-scrapy crawl seek -o $MYPATH/$COUNTRY/static/output/$CURRENT_FILENAME.json
+xvfb-run scrapy crawl seek -o $MYPATH/$COUNTRY/static/output/$CURRENT_FILENAME.json
 sleep 2
 cd $MYPATH/$COUNTRY/static/output
 python deduplicate.py
