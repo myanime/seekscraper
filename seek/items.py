@@ -15,7 +15,7 @@ class SeekItem(scrapy.Item):
     url = scrapy.Field()
     advertiser_id = scrapy.Field()
     advertiser_description = scrapy.Field()
-    suburbWhereValue_ = scrapy.Field()
+    suburbWhereValue = scrapy.Field()
     classification_description = scrapy.Field()
     subClassification_description = scrapy.Field()
     logo_ID = scrapy.Field()
@@ -32,6 +32,7 @@ class SeekItem(scrapy.Item):
     area = scrapy.Field()
     original_link_telephones = scrapy.Field()
     original_link_emails = scrapy.Field()
+    salaryrange=scrapy.Field()
 
 
 class JobID(scrapy.Item):

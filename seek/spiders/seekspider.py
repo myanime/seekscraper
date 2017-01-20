@@ -122,15 +122,25 @@ chrome.webRequest.onAuthRequired.addListener(
 '''
 
 class JobListScraper(scrapy.Spider):
+    """
+    scrapy crawl joblist -s DNS_TIMEOUT=3 -s DOWNLOAD_TIMEOUT=5 -o test21.csv
+    """
     name = "joblist"
     seek_pages = []
-    for page in range(1, 2):
-        seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?daterange=3&page={}'.format(page))
+    salary_ranges = [0, 30000, 40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000, 200000, 999999]
+    for i in range(0, len(salary_ranges) - 1):
+        for page in range(1, 250):
+            seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?'
+                              'daterange=3&salaryrange={1}-{2}&salarytype=annual&page={0}'
+                              .format(page, salary_ranges[i], salary_ranges[i+1]))
 
     start_urls = seek_pages
 
     def parse(self, response):
         links = response.css("a[href*='/job/']").extract()
+        urlprice = response.url
+        urlprice = urlprice.replace('https://www.seek.com.au/jobs/in-All-Australia?daterange=3&salaryrange=', '')
+        urlprice = urlprice.split('&')[0]
         for link in links:
             soup = BeautifulSoup(link)
             job = soup.find('a', href=True)['href']
@@ -138,7 +148,7 @@ class JobListScraper(scrapy.Spider):
             job = job.split('?')[0]
             print job
             item = JobID()
-            item['url'] = job
+            item['url'] = str(job) + ',' + urlprice
             yield item
 
 
@@ -170,7 +180,11 @@ class SeekScraper(scrapy.Spider):
         time.sleep(10)
 
         for id in seek_ids:
-            url = "https://www.seek.com.au/job/" + id
+            urlid = id.split(',')[0]
+            salaryrange= id.split(',')[1]
+            item = SeekItem()
+            item['salaryrange'] = salaryrange
+            url = "https://www.seek.com.au/job/" + urlid
             try:
                 # wait = random.randrange(10,15)
                 # time.sleep(wait)
@@ -228,7 +242,7 @@ class SeekScraper(scrapy.Spider):
                 except:
                     pass
 
-            item = SeekItem()
+
             item['text'] = text
             item['url'] = url
 
@@ -322,4 +336,3 @@ class SeekScraper(scrapy.Spider):
                 pass
 
             return item
-
