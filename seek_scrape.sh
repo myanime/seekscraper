@@ -22,11 +22,13 @@ python salarydedupe.py
 mv $MYPATH/$COUNTRY/static/output/joblist.csv $MYPATH/$COUNTRY/static/output/joblist
 sleep 5
 #xvfb-run
+echo "STARTING SCRAPING"
+sleep 5
 scrapy crawl seek -o $MYPATH/$COUNTRY/static/output/$CURRENT_FILENAME.json
 sleep 2
 cd $MYPATH/$COUNTRY/static/output
 python deduplicate.py
-sleep 5	
+sleep 5
 cd $MYPATH/$COUNTRY/static/output/transfer
 gzip *.*
 mv *.* /$MYPATH/transfer/$COUNTRY
