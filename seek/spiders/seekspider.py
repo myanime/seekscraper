@@ -205,12 +205,12 @@ class SeekScraper(scrapy.Spider):
 
         def loadchrome():
             driver = webdriver.Chrome("./chromedriver")
-            # display = Display(visible=0, size=(800, 600))
-            # display.start()
+            display = Display(visible=0, size=(800, 600))
+            display.start()
             driver.get("http://www.google.com")
-            return driver
+            return driver, display
 
-        driver = loadchrome()
+        driver, display = loadchrome()
         time.sleep(10)
 
         for id in seek_ids:
@@ -270,7 +270,7 @@ class SeekScraper(scrapy.Spider):
                             file.write('\n')
                         time.sleep(30)
                         driver.quit()
-                        # display.stop()
+                        display.stop()
                         time.sleep(5)
                         driver = loadchrome()
 
