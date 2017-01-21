@@ -3,3 +3,4 @@ chromedriver
 error.txt
 seek.json
 proxy_auth_plugin.zip
+*.pyc
