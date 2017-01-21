@@ -204,7 +204,8 @@ class SeekScraper(scrapy.Spider):
             return driver
 
         def loadchrome():
-            driver = webdriver.Chrome("./chromedriver")
+            # driver = webdriver.Chrome("./chromedriver")
+            driver = webdriver.Firefox()
             display = Display(visible=0, size=(800, 600))
             display.start()
             driver.get("http://www.google.com")
