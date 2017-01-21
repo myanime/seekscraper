@@ -33,6 +33,7 @@ class SeekItem(scrapy.Item):
     original_link_telephones = scrapy.Field()
     original_link_emails = scrapy.Field()
     salaryrange=scrapy.Field()
+    postCode = scrapy.Field()
 
 
 class JobID(scrapy.Item):
