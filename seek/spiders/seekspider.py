@@ -121,25 +121,51 @@ chrome.webRequest.onAuthRequired.addListener(
 }
 '''
 
+
+class URLScraper(scrapy.Spider):
+    name = "pc"
+    all_urls=[]
+    zips = [line.strip('\n') for line in open('./seek/spiders/zips')]
+    for zip in zips:
+        urls = 'https://api.seek.com.au/v2/jobs/search?salaryRange=0-999999&dateRange=1&where={0}'.format(zip)
+        all_urls.append(urls)
+    start_urls = all_urls
+
+    def parse(self, response):
+        import json
+        jsonresponse = json.loads(response.body_as_unicode())
+        postcode = response.url
+        postcode = postcode.replace('https://api.seek.com.au/v2/jobs/search?salaryRange=0-999999&dateRange=1&where=','')
+        parentLocation = jsonresponse['location']['suburbParentDescription']
+        if parentLocation:
+            with open('postcodes_map', 'a') as f:
+                f.write(postcode)
+                f.write(',')
+                f.write(parentLocation)
+                f.write('\n')
+
 class JobListScraper(scrapy.Spider):
     """
     scrapy crawl joblist -s DNS_TIMEOUT=3 -s DOWNLOAD_TIMEOUT=5 -o test21.csv
     """
+    DAYS = 3
     name = "joblist"
     seek_pages = []
     salary_ranges = [0, 30000, 40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000, 200000, 999999]
     for i in range(0, len(salary_ranges) - 1):
-        for page in range(1, 250):
+        for page in range(1, 25):
             seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?'
-                              'daterange=3&salaryrange={1}-{2}&salarytype=annual&page={0}'
-                              .format(page, salary_ranges[i], salary_ranges[i+1]))
+                              'daterange={3}&salaryrange={1}-{2}&salarytype=annual&page={0}'
+                              .format(page, salary_ranges[i], salary_ranges[i+1],DAYS))
 
     start_urls = seek_pages
 
     def parse(self, response):
+        print "#####################"
+        print self.DAYS
         links = response.css("a[href*='/job/']").extract()
         urlprice = response.url
-        urlprice = urlprice.replace('https://www.seek.com.au/jobs/in-All-Australia?daterange=3&salaryrange=', '')
+        urlprice = urlprice.replace('https://www.seek.com.au/jobs/in-All-Australia?daterange={0}&salaryrange='.format(self.DAYS), '')
         urlprice = urlprice.split('&')[0]
         for link in links:
             soup = BeautifulSoup(link)

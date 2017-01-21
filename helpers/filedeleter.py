@@ -5,6 +5,10 @@ try:
 except:
     pass
 try:
+    os.remove('./static/output/joblist.csv')
+except:
+    pass
+try:
     os.remove('./static/output/seek.json')
 except:
     pass
