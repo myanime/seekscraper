@@ -21,10 +21,9 @@ sleep 5
 python salarydedupe.py
 mv $MYPATH/$COUNTRY/static/output/joblist.csv $MYPATH/$COUNTRY/static/output/joblist
 sleep 5
-#xvfb-run
 echo "STARTING SCRAPING"
 sleep 5
-xvfb-run scrapy crawl seek -o $MYPATH/$COUNTRY/static/output/$CURRENT_FILENAME.json
+scrapy crawl seek -o $MYPATH/$COUNTRY/static/output/$CURRENT_FILENAME.json
 sleep 2
 cd $MYPATH/$COUNTRY/static/output
 python deduplicate.py
