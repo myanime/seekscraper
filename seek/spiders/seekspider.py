@@ -182,6 +182,8 @@ class JobListScraper(scrapy.Spider):
 class SeekScraper(scrapy.Spider):
     start_urls = ['https://www.google.com']
     name = "seek"
+    display = Display(visible=0, size=(800, 600))
+    display.start()
 
     def parse(self, response):
         with open('./static/output/joblist', 'r') as file:
@@ -206,12 +208,11 @@ class SeekScraper(scrapy.Spider):
         def loadchrome():
             # driver = webdriver.Chrome("./chromedriver")
             driver = webdriver.Firefox()
-            display = Display(visible=0, size=(800, 600))
-            display.start()
-            driver.get("http://www.google.com")
-            return driver, display
 
-        driver, display = loadchrome()
+            driver.get("http://www.google.com")
+            return driver
+
+        driver = loadchrome()
         time.sleep(10)
 
         for id in seek_ids:
@@ -265,13 +266,23 @@ class SeekScraper(scrapy.Spider):
                 text = ''
                 try:
                     if "blocked access" in driver.page_source:
+                        print "###########################################################################"
+                        print "###########################################################################"
+                        print "###########################################################################"
+                        print "###########################################################################"
+                        print "###########################################################################"
+                        print "############################### GOT BLOCKED ###############################"
+                        print "###########################################################################"
+                        print "###########################################################################"
+                        print "###########################################################################"
+                        print "###########################################################################"
+
                         with open('error.txt', 'a') as file:
                             file.write("Error\n")
                             file.write(url)
                             file.write('\n')
                         time.sleep(30)
                         driver.quit()
-                        display.stop()
                         time.sleep(5)
                         driver = loadchrome()
 
