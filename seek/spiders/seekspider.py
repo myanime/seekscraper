@@ -10,7 +10,7 @@ import random
 from selenium.webdriver.chrome.options import Options
 import zipfile
 import re
-from pyvirtualdisplay import Display
+# from pyvirtualdisplay import Display
 manifest_json = """
 {
     "version": "1.0.0",
@@ -149,12 +149,12 @@ class JobListScraper(scrapy.Spider):
     """
     scrapy crawl joblist -s DNS_TIMEOUT=3 -s DOWNLOAD_TIMEOUT=5 -o test21.csv
     """
-    DAYS = 3
+    DAYS = 1
     name = "joblist"
     seek_pages = []
     salary_ranges = [0, 30000, 40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000, 200000, 999999]
     for i in range(0, len(salary_ranges) - 1):
-        for page in range(1, 50):
+        for page in range(1, 100):
             seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?'
                               'daterange={3}&salaryrange={1}-{2}&salarytype=annual&page={0}'
                               .format(page, salary_ranges[i], salary_ranges[i+1],DAYS))
@@ -182,8 +182,8 @@ class JobListScraper(scrapy.Spider):
 class SeekScraper(scrapy.Spider):
     start_urls = ['https://www.google.com']
     name = "seek"
-    display = Display(visible=0, size=(800, 600))
-    display.start()
+    # display = Display(visible=0, size=(800, 600))
+    # display.start()
 
     def parse(self, response):
         with open('./static/output/joblist', 'r') as file:
@@ -206,8 +206,8 @@ class SeekScraper(scrapy.Spider):
             return driver
 
         def loadchrome():
-            # driver = webdriver.Chrome("./chromedriver")
-            driver = webdriver.Firefox()
+            driver = webdriver.Chrome("./chromedriver")
+            # driver = webdriver.Firefox()
 
             driver.get("http://www.google.com")
             return driver

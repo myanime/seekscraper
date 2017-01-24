@@ -1,9 +1,10 @@
+"start:" >> ./runcounter
+date >> ./runcounter
 CURRENT_FILENAME=seek
 MYDATE=$(date +"%d_%m_%Y")
 MYPATH=/home/myanime/repos
 COUNTRY=seek
 cd $MYPATH/$COUNTRY/static/
-date >> ./runcounter
 date +%d-%m-%Y_%H:%M > date
 sleep 5
 echo Starting_Scrapy
@@ -32,3 +33,8 @@ gzip *.*
 mv *.* /$MYPATH/transfer/$COUNTRY
 scp -i /home/myanime/.ssh/aws_schlupfi.pem -r $MYPATH/transfer/$COUNTRY/* ubuntu@52.59.254.43:./countries/$COUNTRY
 #scp -i $MYPATH/.ssh/aws_schlupfi.pem -r $MYPATH/transfer/$COUNTRY/* ubuntu@52.59.254.43:./countries/$COUNTRY
+sleep 10
+"stop:" >> ./runcounter
+date >> ./runcounter
+sleep 10
+sudo shutdown now
