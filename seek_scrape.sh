@@ -29,7 +29,7 @@ python deduplicate.py
 sleep 5
 cd $MYPATH/$COUNTRY/static/output/transfer
 gzip *.*
-mv *.* /$MYPATH/transfer/$COUNTRY
+mv *.* /$MYPATH/countries/$COUNTRY
 #scp -i /home/myanime/.ssh/aws_schlupfi.pem -r $MYPATH/transfer/$COUNTRY/* ubuntu@52.59.254.43:./countries/$COUNTRY
 #scp -i $MYPATH/.ssh/aws_schlupfi.pem -r $MYPATH/transfer/$COUNTRY/* ubuntu@52.59.254.43:./countries/$COUNTRY
 sleep 10
@@ -37,4 +37,4 @@ cd $MYPATH/$COUNTRY/
 echo "stop:" >> ./runcounter
 date >> ./runcounter
 sleep 10
-#sudo shutdown now
+sudo reboot now
