@@ -15,4 +15,4 @@ df_month_output_deduped = df.merge(df_post_codes, on='locationWhereValue', how='
 # df = df.sort('id')
 today=time.strftime('_%d_%m_%Y')
 filename='./transfer/seek_final{0}.csv'.format(today)
-df_month_output_deduped.to_csv(filename, encoding='utf-8')
+df_month_output_deduped.to_csv(filename, encoding='utf-8', index=False)

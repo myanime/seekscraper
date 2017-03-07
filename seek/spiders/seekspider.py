@@ -375,7 +375,7 @@ class SeekScraper(scrapy.Spider):
                 pass
             try:
                 pass
-                # item['workType'] = data['workType']
+                item['workType'] = data['workType']
             except:
                 pass
             try:
