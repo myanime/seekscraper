@@ -370,7 +370,7 @@ class SeekScraper(scrapy.Spider):
             except:
                 pass
             try:
-                item['teaser'] = data['teaser']
+                item['teaser'] = data['teaser'].replace('‘','').replace('’','').rstrip('\n')
             except:
                 pass
             try:
