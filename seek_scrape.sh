@@ -10,6 +10,9 @@ sleep 5
 echo Starting_Scrapy
 cd $MYPATH/$COUNTRY/
 echo "DELETING STUFF"
+mkdir $MYPATH/$COUNTRY/static/output/transfer
+mkdir $MYPATH/$COUNTRY/static/output/history
+mv $MYPATH/$COUNTRY/static/output/seek.json $MYPATH/$COUNTRY/static/output/history/backup_$MYDATE.json
 rm $MYPATH/$COUNTRY/static/output/joblist
 rm $MYPATH/$COUNTRY/static/output/seek.json
 sleep 5
