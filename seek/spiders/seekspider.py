@@ -10,6 +10,7 @@ import random
 from selenium.webdriver.chrome.options import Options
 import zipfile
 import re
+import traceback
 # from pyvirtualdisplay import Display
 manifest_json = """
 {
@@ -219,7 +220,7 @@ class SeekScraper(scrapy.Spider):
             urlid = id.split(',')[0]
             salaryrange= id.split(',')[1]
             item = SeekItem()
-            item['salaryrange'] = salaryrange
+            item['salaryrange'] = salaryrange.rstrip("\r")
             url = "https://www.seek.com.au/job/" + urlid
             try:
                 # wait = random.randrange(10,15)
@@ -287,7 +288,7 @@ class SeekScraper(scrapy.Spider):
                         driver = loadchrome()
 
                 except:
-                    pass
+                    traceback.print_exc()
 
 
             item['text'] = text
@@ -308,22 +309,17 @@ class SeekScraper(scrapy.Spider):
             # df = json_normalize(data)
             # item['name'] = data #df.to_json()
             try:
-                print data['advertiser']['id']
-            except:
-                pass
-            print "############################"
-            try:
                 item['advertiser_id'] = data['advertiser']['id']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['advertiser_description'] = data['advertiser']['description']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['suburbWhereValue'] = data['suburbWhereValue']
             except:
-                pass
+                traceback.print_exc()
             try:
                 postCodeInt = []
                 pcText = data['suburbWhereValue']
@@ -336,59 +332,58 @@ class SeekScraper(scrapy.Spider):
             try:
                 item['classification_description'] = data['classification']['description']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['subClassification_description'] = data['subClassification']['description']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['logo_ID'] = data['logo']['id']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['logo_description'] = data['logo']['description']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['listingDate'] = data['listingDate']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['id'] = data['id']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['title'] = data['title']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['location'] = data['location']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['locationWhereValue'] = data['locationWhereValue']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['teaser'] = data['teaser'].rstrip('\n')
             except:
-                pass
+                traceback.print_exc()
             try:
-                pass
                 item['workType'] = data['workType']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['salary'] = data['salary']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['areaWhereValue'] = data['areaWhereValue']
             except:
-                pass
+                traceback.print_exc()
             try:
                 item['area'] = data['area']
             except:
-                pass
+                traceback.print_exc()
 
             return item
