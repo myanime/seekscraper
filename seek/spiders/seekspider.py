@@ -228,6 +228,19 @@ class SeekScraper(scrapy.Spider):
                 driver.get(url)
                 element = driver.find_element_by_css_selector('div.templatetext')
                 text = element.text
+                print "############################"
+                print "############################"
+                print "############################"
+                print "############################"
+                print "############################"
+                print "The Text you son of a bi***"
+                print "############################"
+                print "############################"
+                print "############################"
+                print text
+                print "############################"
+                print "############################"
+                print "############################"
 
                 ############################################
                 # EMAIL TELEPHONE PARSER
@@ -259,11 +272,8 @@ class SeekScraper(scrapy.Spider):
                     item['original_link_telephones'] = telephone_numbers[0]
                 except:
                     item['original_link_telephones'] = ''
-
-                    ######################################
-
-
             except:
+                traceback.print_exc()
                 text = ''
                 try:
                     if "blocked access" in driver.page_source:
