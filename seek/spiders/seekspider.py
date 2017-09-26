@@ -376,7 +376,7 @@ class SeekScraper(scrapy.Spider):
             except:
                 traceback.print_exc()
             try:
-                item['teaser'] = data['teaser'].rstrip('\n')
+                item['teaser'] = data['teaser'].rstrip('\n').rstrip("\r").rstrip("\r").rstrip("\r")
             except:
                 traceback.print_exc()
             try:
