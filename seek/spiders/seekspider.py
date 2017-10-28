@@ -125,7 +125,7 @@ class SeekScraper(scrapy.Spider):
     name = "seek"
 
     def __init__(self, *args, **kwargs):
-        self.job_ids = []
+        self.all_job_ids = []
         driver = self.loadchrome()
         time.sleep(1)
         DAYS = 1
@@ -158,9 +158,12 @@ class SeekScraper(scrapy.Spider):
                     job = link.get_attribute('href')
                     job = job.split('/job/')[1]
                     job = job.split('?')[0]
-                    job_ids = self.job_ids.append((job, salary_range_string))
+                    self.all_job_ids.append((job, salary_range_string))
                     print(job, salary_range_string)
-        print self.job_ids
+
+        seen = set()
+        self.job_ids = [x for x in self.all_job_ids if x[0] not in seen and not seen.add(x[0])]
+
         super(SeekScraper, self).__init__(*args, **kwargs)
 
     def loadchrome(self):
