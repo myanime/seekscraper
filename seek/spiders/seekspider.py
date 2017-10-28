@@ -1,17 +1,14 @@
 import scrapy
-import time
-from seek.items import SeekItem, JobID
-from bs4 import BeautifulSoup
+from seek.items import SeekItem
 from selenium import webdriver
 import json
 import time
-from pandas.io.json import json_normalize
-import random
 from selenium.webdriver.chrome.options import Options
 import zipfile
 import re
 import traceback
-# from pyvirtualdisplay import Display
+import requests
+
 manifest_json = """
 {
     "version": "1.0.0",
@@ -123,124 +120,88 @@ chrome.webRequest.onAuthRequired.addListener(
 }
 '''
 
-'''
-class URLScraper(scrapy.Spider):
-    name = "pc"
-    all_urls=[]
-    zips = [line.strip('\n') for line in open('./seek/spiders/zips')]
-    for zip in zips:
-        urls = 'https://api.seek.com.au/v2/jobs/search?salaryRange=0-999999&dateRange=1&where={0}'.format(zip)
-        all_urls.append(urls)
-    start_urls = all_urls
-
-    def parse(self, response):
-        import json
-        jsonresponse = json.loads(response.body_as_unicode())
-        postcode = response.url
-        postcode = postcode.replace('https://api.seek.com.au/v2/jobs/search?salaryRange=0-999999&dateRange=1&where=','')
-        parentLocation = jsonresponse['location']['suburbParentDescription']
-        if parentLocation:
-            with open('postcodes_map', 'a') as f:
-                f.write(postcode)
-                f.write(',')
-                f.write(parentLocation)
-                f.write('\n')
-'''
-class JobListScraper(scrapy.Spider):
-    """
-    scrapy crawl joblist -s DNS_TIMEOUT=3 -s DOWNLOAD_TIMEOUT=5 -o test21.csv
-    """
-    DAYS = 1
-    name = "joblist"
-    seek_pages = []
-    salary_ranges = [0, 30000, 40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000, 200000, 999999]
-    for i in range(0, len(salary_ranges) - 1):
-        for page in range(1, 100):
-            seek_pages.append('https://www.seek.com.au/jobs/in-All-Australia?'
-                              'daterange={3}&salaryrange={1}-{2}&salarytype=annual&page={0}'
-                              .format(page, salary_ranges[i], salary_ranges[i+1],DAYS))
-
-    start_urls = seek_pages
-
-    def parse(self, response):
-        print "#####################"
-        print self.DAYS
-        links = response.css("a[href*='/job/']").extract()
-        urlprice = response.url
-        urlprice = urlprice.replace('https://www.seek.com.au/jobs/in-All-Australia?daterange={0}&salaryrange='.format(self.DAYS), '')
-        urlprice = urlprice.split('&')[0]
-        for link in links:
-            soup = BeautifulSoup(link)
-            job = soup.find('a', href=True)['href']
-            job = job.replace('/job/', '')
-            job = job.split('?')[0]
-            print job
-            item = JobID()
-            item['url'] = str(job) + ',' + urlprice
-            yield item
-
-
 class SeekScraper(scrapy.Spider):
     start_urls = ['https://www.google.com']
     name = "seek"
-    # display = Display(visible=0, size=(800, 600))
-    # display.start()
+
+    def __init__(self, *args, **kwargs):
+        self.job_ids = []
+        driver = self.loadchrome()
+        time.sleep(1)
+        DAYS = 1
+        salary_ranges = [0, 30000, 40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000, 200000, 999999]
+        # salary_ranges = [0, 30000]
+        # for i in range(0, 1):
+        for i in range(0, len(salary_ranges) - 1):
+            salary_range_string = str(salary_ranges[i]) + "-" + str(salary_ranges[i + 1])
+            # for page in range(1, 2):
+            for page in range(1, 100):
+                current_page = 'https://www.seek.com.au/jobs/in-All-Australia?' \
+                               'daterange={3}&salaryrange={1}-{2}&salarytype=annual&page={0}' \
+                    .format(page, salary_ranges[i], salary_ranges[i + 1], DAYS)
+                driver.get(current_page)
+                if "we couldn't find anything" in driver.page_source:
+                    print("Moving on to next salary level")
+                    break
+                if "blocked access" in driver.page_source:
+                    print "###########################################################################"
+                    print "############################### GOT BLOCKED ###############################"
+                    print "###########################################################################"
+                    time.sleep(5)
+                    driver.quit()
+                    time.sleep(5)
+                    driver = self.loadchrome()
+
+                links = driver.find_elements_by_xpath("//span/h1/a")
+                urlprice = str(salary_ranges[i] + salary_ranges[i + 1])
+                for link in links:
+                    job = link.get_attribute('href')
+                    job = job.split('/job/')[1]
+                    job = job.split('?')[0]
+                    job_ids = self.job_ids.append((job, salary_range_string))
+                    print(job, salary_range_string)
+        print self.job_ids
+        super(SeekScraper, self).__init__(*args, **kwargs)
+
+    def loadchrome(self):
+        driver = webdriver.Chrome("./chromedriver")
+        driver.get("http://www.google.com")
+        return driver
+
+    def loadchromeProxy(self):
+        pluginfile = 'proxy_auth_plugin.zip'
+
+        with zipfile.ZipFile(pluginfile, 'w') as zp:
+            zp.writestr("manifest.json", manifest_json)
+            zp.writestr("background.js", background_js)
+
+        co = Options()
+        co.add_argument("--start-maximized")
+        co.add_extension(pluginfile)
+
+        driver = webdriver.Chrome("./chromedriver", chrome_options=co)
+        driver.get("http://www.google.com")
+        return driver
 
     def parse(self, response):
-        with open('./static/output/joblist', 'r') as file:
-            seek_ids = [line.rstrip('\n') for line in file]
-            seek_ids = seek_ids[1:]
-
-        def loadchromeProxy():
-            pluginfile = 'proxy_auth_plugin.zip'
-
-            with zipfile.ZipFile(pluginfile, 'w') as zp:
-                zp.writestr("manifest.json", manifest_json)
-                zp.writestr("background.js", background_js)
-
-            co = Options()
-            co.add_argument("--start-maximized")
-            co.add_extension(pluginfile)
-
-            driver = webdriver.Chrome("./chromedriver", chrome_options=co)
-            driver.get("http://www.google.com")
-            return driver
-
-        def loadchrome():
-            driver = webdriver.Chrome("./chromedriver")
-            # driver = webdriver.Firefox()
-
-            driver.get("http://www.google.com")
-            return driver
-
-        driver = loadchrome()
-        time.sleep(10)
-
+        driver = self.loadchrome()
+        time.sleep(3)
+        seek_ids = self.job_ids
         for id in seek_ids:
-            urlid = id.split(',')[0]
-            salaryrange= id.split(',')[1]
+            urlid = id[0]
+            salaryrange= id[1]
             item = SeekItem()
             item['salaryrange'] = salaryrange.rstrip("\r")
             url = "https://www.seek.com.au/job/" + urlid
             try:
-                # wait = random.randrange(10,15)
-                # time.sleep(wait)
                 driver.get(url)
                 element = driver.find_element_by_css_selector('div.templatetext')
                 text = element.text
                 print "############################"
+                print "###########TEXT#############"
                 print "############################"
-                print "############################"
-                print "############################"
-                print "############################"
-                print "The Text you son of a bi***"
-                print "############################"
-                print "############################"
-                print "############################"
-                print text
-                print "############################"
-                print "############################"
-                print "############################"
+                # print text
+                # print "############################"
 
                 ############################################
                 # EMAIL TELEPHONE PARSER
@@ -295,29 +256,30 @@ class SeekScraper(scrapy.Spider):
                         time.sleep(30)
                         driver.quit()
                         time.sleep(5)
-                        driver = loadchrome()
+                        driver = self.loadchrome()
 
                 except:
                     traceback.print_exc()
 
-
             item['text'] = text
             item['url'] = url
 
-            apiurl = 'https://api.seek.com.au/v2/jobs/search?jobId={}'.format(id)
-            request = scrapy.Request(apiurl, callback=self.get_json)
-            request.meta['item'] = item
-            yield request
+            apiurl = 'https://api.seek.com.au/v2/jobs/search?jobId={}'.format(urlid)
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print(apiurl)
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            r = requests.get(apiurl)
+            if r.status_code == 200:
+                print("#######################################")
+                print("###########SUCCESSFUL REQUEST##########")
+                print("#######################################")
+                jsonresponse = r.json()
+                item = self.get_json(jsonresponse, item)
+            yield item
 
-    def get_json(self, response):
-        jsonresponse = json.loads(response.body_as_unicode())
+    def get_json(self, jsonresponse, item):
         if jsonresponse['totalCount'] > 0:
             data = jsonresponse['data'][0]
-            # import time
-            # time.sleep(10)
-            item = response.meta['item']
-            # df = json_normalize(data)
-            # item['name'] = data #df.to_json()
             try:
                 item['advertiser_id'] = data['advertiser']['id']
             except:
