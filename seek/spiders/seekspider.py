@@ -128,7 +128,7 @@ class SeekScraper(scrapy.Spider):
         self.all_job_ids = []
         driver = self.loadchrome()
         time.sleep(1)
-        DAYS = 2
+        DAYS = 1
         salary_ranges = [0, 30000, 40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000, 200000, 999999]
         # salary_ranges = [0, 30000]
         # for i in range(0, 1):
