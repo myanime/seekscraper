@@ -253,7 +253,7 @@ class SeekScraper(scrapy.Spider):
                         print "###########################################################################"
 
                         with open('error.txt', 'a') as file:
-                            file.write("Error\n")
+                            file.write(time.strftime('%d.%m %H:%M'))
                             file.write(url)
                             file.write('\n')
                         time.sleep(30)
