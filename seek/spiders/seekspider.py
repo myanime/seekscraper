@@ -8,6 +8,7 @@ import zipfile
 import re
 import traceback
 import requests
+from selenium.common.exceptions import TimeoutException
 
 manifest_json = """
 {
@@ -139,7 +140,15 @@ class SeekScraper(scrapy.Spider):
                 current_page = 'https://www.seek.com.au/jobs/in-All-Australia?' \
                                'daterange={3}&salaryrange={1}-{2}&salarytype=annual&page={0}' \
                     .format(page, salary_ranges[i], salary_ranges[i + 1], DAYS)
-                driver.get(current_page)
+                try:
+                    driver.get(current_page)
+                except TimeoutException:
+                    with open('error.txt', 'a') as file:
+                        file.write(time.strftime('%d.%m %H:%M'))
+                        file.write("###################TIMEOUT##############")
+                        file.write('\n')
+                    continue
+
                 if "we couldn't find anything" in driver.page_source:
                     print("Moving on to next salary level")
                     break
