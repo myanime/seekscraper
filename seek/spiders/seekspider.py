@@ -142,11 +142,14 @@ class SeekScraper(scrapy.Spider):
                     .format(page, salary_ranges[i], salary_ranges[i + 1], DAYS)
                 try:
                     driver.get(current_page)
+                    print(current_page)
                 except TimeoutException:
                     with open('error.txt', 'a') as file:
                         file.write(time.strftime('%d.%m %H:%M'))
                         file.write("###################TIMEOUT##############")
                         file.write('\n')
+                    driver.quit()
+                    driver = self.loadchrome()
                     continue
 
                 if "we couldn't find anything" in driver.page_source:
@@ -177,7 +180,7 @@ class SeekScraper(scrapy.Spider):
 
     def loadchrome(self):
         driver = webdriver.Chrome("./chromedriver")
-        driver.get("http://www.google.com")
+        driver.set_page_load_timeout(5)
         return driver
 
     def loadchromeProxy(self):
@@ -245,6 +248,14 @@ class SeekScraper(scrapy.Spider):
                     item['original_link_telephones'] = telephone_numbers[0]
                 except:
                     item['original_link_telephones'] = ''
+            except TimeoutException:
+                with open('error.txt', 'a') as file:
+                    file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
+                    file.write("###################TIMEOUT MAIN Scraper##############")
+                    file.write('\n')
+                driver.quit()
+                driver = self.loadchrome()
+                continue
             except:
                 traceback.print_exc()
                 text = ''
@@ -262,12 +273,10 @@ class SeekScraper(scrapy.Spider):
                         print "###########################################################################"
 
                         with open('error.txt', 'a') as file:
-                            file.write(time.strftime('%d.%m %H:%M'))
+                            file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
                             file.write(url)
                             file.write('\n')
-                        time.sleep(30)
                         driver.quit()
-                        time.sleep(5)
                         driver = self.loadchrome()
 
                 except:
