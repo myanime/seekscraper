@@ -180,7 +180,7 @@ class SeekScraper(scrapy.Spider):
 
     def loadchrome(self):
         driver = webdriver.Chrome("./chromedriver")
-        driver.set_page_load_timeout(5)
+        driver.set_page_load_timeout(10)
         return driver
 
     def loadchromeProxy(self):
