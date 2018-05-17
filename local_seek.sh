@@ -21,6 +21,6 @@ cd $MYPATH/$COUNTRY/static/output
 python deduplicate.py
 sleep 5
 cd $MYPATH/$COUNTRY/static/output/transfer
-#gzip *.*
-#scp -i /home/media/.ssh/aws_schlupfi.pem -r $MYPATH/$COUNTRY/static/output/transfer/* ubuntu@52.59.254.43:./countries/seek
-#rm $MYPATH/$COUNTRY/static/output/transfer/*
+gzip *.*
+scp -i /home/media/.ssh/aws_schlupfi.pem -r $MYPATH/$COUNTRY/static/output/transfer/* ubuntu@52.59.254.43:./countries/seek
+rm $MYPATH/$COUNTRY/static/output/transfer/*
