@@ -37,15 +37,14 @@ class SeekScraper(scrapy.Spider):
     def get_jobs_and_set_job_ids(self):
         driver = self.load_chrome()
         self.warm_up(driver)
-        time.sleep(1)
         DAYS = 1
         salary_ranges = [0, 30000, 40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000, 200000, 999999]
-        salary_ranges = [30000, 100000]
-        for i in range(0, 1):
-        # for i in range(0, len(salary_ranges) - 1):
+        # salary_ranges = [30000, 100000]
+        # for i in range(0, 1):
+        for i in range(0, len(salary_ranges) - 1):
             salary_range_string = str(salary_ranges[i]) + "-" + str(salary_ranges[i + 1])
-            for page in range(1, 2):
-            # for page in range(1, 100):
+            # for page in range(1, 2):
+            for page in range(1, 100):
                 current_page = 'https://www.seek.com.au/jobs/in-All-Australia?' \
                                'daterange={3}&salaryrange={1}-{2}&salarytype=annual&page={0}' \
                     .format(page, salary_ranges[i], salary_ranges[i + 1], DAYS)
