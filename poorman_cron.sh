@@ -5,7 +5,7 @@ sleep 3600
 while true
 do
     echo "Starting in 24hrs"
+    gnome-terminal --command=/home/myanime/seekscraper/local_seek.sh --display=:0
     sleep 86400
-    gnome-terminal --command=/home/media/seek/local_seek.sh --display=:0
 done
 

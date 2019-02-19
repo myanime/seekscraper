@@ -1,125 +1,27 @@
-import scrapy
-from seek.items import SeekItem
-from selenium import webdriver
-import json
-import time
-from selenium.webdriver.chrome.options import Options
-import zipfile
 import re
+import time
 import traceback
-import requests
-from selenium.common.exceptions import TimeoutException
 
-manifest_json = """
-{
-    "version": "1.0.0",
-    "manifest_version": 2,
-    "name": "Chrome Proxy",
-    "permissions": [
-        "proxy",
-        "tabs",
-        "unlimitedStorage",
-        "storage",
-        "<all_urls>",
-        "webRequest",
-        "webRequestBlocking"
-    ],
-    "background": {
-        "scripts": ["background.js"]
-    },
-    "minimum_chrome_version":"22.0.0"
-}
-"""
-background_js = """
-var config = {
-        mode: "fixed_servers",
-        rules: {
-          singleProxy: {
-            scheme: "http",
-            host: "schlupfi.de",
-            port: parseInt(3128)
-          },
-          bypassList: ["foobar.com"]
-        }
-      };
+import scrapy
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
-chrome.proxy.settings.set({value: config, scope: "regular"}, function() {});
+from seek.items import SeekItem
 
-function callbackFn(details) {
-    return {
-        authCredentials: {
-            username: "user1",
-            password: "indeed"
-        }
-    };
-}
+example_job_list = [
+    ("38226458", "payrange222"),
+    ("38341779", "payrange222"),
+    ("38273443", "payrange222"),
+    ("38316054", "payrange222"),
+    ("38295104", "payrange222"),
+    ("38302885", "payrange222"),
+    ("38292661", "payrange222"),
+    ("38159962", "payrange222"),
+    ("38151424", "payrange222"),
 
-chrome.webRequest.onAuthRequired.addListener(
-            callbackFn,
-            {urls: ["<all_urls>"]},
-            ['blocking']
-);
-"""
-'''
-{
-  "title": "Start a Job Search & Find a Dream Career - Jobs Posted Daily",
-  "totalCount": 1,
-  "data": [
-    {
-      "id": 32597245,
-      "listingDate": "2017-01-15T19:53:51Z",
-      "title": "Electrician",
-      "teaser": "Looking for Electricians in the Central Coast",
-      "bulletPoints": [
+]
 
-      ],
-      "advertiser": {
-        "id": "35085835",
-        "description": "V Com"
-      },
-      "logo": {
-        "id": "",
-        "description": null
-      },
-      "isPremium": false,
-      "isStandOut": false,
-      "location": "Gosford & Central Coast",
-      "area": "",
-      "workType": "Full Time",
-      "classification": {
-        "id": "1225",
-        "description": "Trades & Services"
-      },
-      "subClassification": {
-        "id": "6230",
-        "description": "Electricians"
-      },
-      "salary": "",
-      "companyProfileStructuredDataId": 21991,
-      "locationWhereValue": "Gosford & Central Coast NSW",
-      "automaticInclusion": false,
-      "displayType": "standard",
-      "tracking": "ewogICJ0b2tlbiI6ICI2NTYzMmRjYi03ZDBjLTQ0MjAtYjI2ZC05NGU4OTg3ZTg1NmZfMSIKfQ=="
-    }
-  ],
-  "paginationParameters": {
-    "hadPremiumListings": false,
-    "seekSelectAllPages": true
-  },
-  "info": {
-    "timeTaken": 10,
-    "source": "JobSearch-ES"
-  },
-  "userQueryId": "API4579572098423361657",
-  "sortMode": [
-    {
-      "name": "Date",
-      "value": "ListedDate",
-      "isActive": true
-    }
-  ]
-}
-'''
+DEBUG = False
 
 class SeekScraper(scrapy.Spider):
     start_urls = ['https://www.google.com']
@@ -127,45 +29,51 @@ class SeekScraper(scrapy.Spider):
 
     def __init__(self, *args, **kwargs):
         self.all_job_ids = []
-        driver = self.loadchrome()
+        self.job_ids = example_job_list if DEBUG else None
+        if not DEBUG:
+            self.get_jobs_and_set_job_ids()
+        super(SeekScraper, self).__init__(*args, **kwargs)
+
+    def get_jobs_and_set_job_ids(self):
+        driver = self.load_chrome()
+        self.warm_up(driver)
         time.sleep(1)
         DAYS = 1
         salary_ranges = [0, 30000, 40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000, 200000, 999999]
-        # salary_ranges = [0, 30000]
-        # for i in range(0, 1):
-        for i in range(0, len(salary_ranges) - 1):
+        salary_ranges = [30000, 100000]
+        for i in range(0, 1):
+        # for i in range(0, len(salary_ranges) - 1):
             salary_range_string = str(salary_ranges[i]) + "-" + str(salary_ranges[i + 1])
-            # for page in range(1, 2):
-            for page in range(1, 100):
+            for page in range(1, 2):
+            # for page in range(1, 100):
                 current_page = 'https://www.seek.com.au/jobs/in-All-Australia?' \
                                'daterange={3}&salaryrange={1}-{2}&salarytype=annual&page={0}' \
                     .format(page, salary_ranges[i], salary_ranges[i + 1], DAYS)
+                # current_page = 'https://www.seek.com.au/jobs/in-All-Australia?daterange=1&salaryrange=0-100000&salarytype=annual&page=1'
                 try:
                     driver.get(current_page)
+                    time.sleep(5)
                     print(current_page)
                 except TimeoutException:
-                    with open('error.txt', 'a') as file:
+                    with open('error_timeout.txt', 'a') as file:
                         file.write(time.strftime('%d.%m %H:%M'))
                         file.write("###################TIMEOUT##############")
                         file.write('\n')
                     driver.quit()
-                    driver = self.loadchrome()
+                    driver = self.load_chrome()
                     continue
 
                 if "we couldn't find anything" in driver.page_source:
                     print("Moving on to next salary level")
                     break
-                if "blocked access" in driver.page_source:
-                    print "###########################################################################"
-                    print "############################### GOT BLOCKED ###############################"
-                    print "###########################################################################"
-                    time.sleep(5)
+                blocked = self.check_if_blocked(driver, 'getting ids')
+                if blocked:
                     driver.quit()
-                    time.sleep(5)
-                    driver = self.loadchrome()
-
+                    driver = self.load_chrome()
+                    self.warm_up(driver)
+                    continue
                 links = driver.find_elements_by_xpath("//span/h1/a")
-                urlprice = str(salary_ranges[i] + salary_ranges[i + 1])
+
                 for link in links:
                     job = link.get_attribute('href')
                     job = job.split('/job/')[1]
@@ -175,181 +83,135 @@ class SeekScraper(scrapy.Spider):
 
         seen = set()
         self.job_ids = [x for x in self.all_job_ids if x[0] not in seen and not seen.add(x[0])]
+        print(self.job_ids)
+        with open('job_ids.txt', 'a') as file:
+            file.write(str(self.job_ids))
+        time.sleep(30)
 
-        super(SeekScraper, self).__init__(*args, **kwargs)
-
-    def loadchrome(self):
+    def load_chrome(self):
         driver = webdriver.Chrome("./chromedriver")
         driver.set_page_load_timeout(10)
         return driver
 
-    def loadchromeProxy(self):
-        pluginfile = 'proxy_auth_plugin.zip'
+    def check_if_blocked(self, driver, job_id):
+        try:
+            if "blocked access" in driver.page_source:
+                print "###########################################################################"
+                print "############################### GOT BLOCKED ###############################"
+                print "###########################################################################"
+                with open('error_blocked.txt', 'a') as file:
+                    file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
+                    file.write(job_id)
+                    file.write('\n')
+                return True
+        except:
+            traceback.print_exc()
 
-        with zipfile.ZipFile(pluginfile, 'w') as zp:
-            zp.writestr("manifest.json", manifest_json)
-            zp.writestr("background.js", background_js)
+    def phone_and_email_parser(self, item):
+        text = item['text']
+        emails = []
+        telephone_numbers = []
 
-        co = Options()
-        co.add_argument("--start-maximized")
-        co.add_extension(pluginfile)
+        re_email = r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+"
+        re1 = r'(0[1-8]{1,1} [0-9]{3,5} [0-9]{3,5})'
+        re2 = r'(\([0-9]{2,2}\).[0-9]{3,5}.[0-9]{3,5})'
+        re3 = r'\+61.[0-9]{1,1}.[0-9]{2,5}.[0-9]{2,5}.[0-9]{2,5}'
 
-        driver = webdriver.Chrome("./chromedriver", chrome_options=co)
-        driver.get("http://www.google.com")
-        return driver
+        e1 = re.search(re_email, text, re.I)
+        if e1:
+            emails.append(e1.group())
+        t1 = re.search(re1, text, re.I)
+        t2 = re.search(re2, text, re.I)
+        t3 = re.search(re3, text, re.I)
+        if t1:
+            telephone_numbers.append(t1.group())
+        if t2:
+            telephone_numbers.append(t2.group())
+        if t3:
+            telephone_numbers.append(t3.group())
+        try:
+            item['original_link_emails'] = emails[0]
+        except:
+            item['original_link_emails'] = 'None'
+        try:
+            item['original_link_telephones'] = telephone_numbers[0]
+        except:
+            item['original_link_telephones'] = ''
+        return item
+
+    def warm_up(self, driver):
+        driver.get('https://www.seek.com.au/job/38226458')
+        time.sleep(5)
+
+    def get_first_element(self, driver, xpath):
+        try:
+            element = driver.find_elements_by_xpath(xpath)[1]
+            text = element.text
+            return text
+        except NoSuchElementException:
+            pass
+        except:
+            pass
+
+    def find_element(self, driver, xpath):
+        try:
+            element = driver.find_element_by_xpath(xpath)
+            text = element.text
+            return text
+        except NoSuchElementException:
+            pass
+        except:
+            pass
 
     def parse(self, response):
-        driver = self.loadchrome()
-        time.sleep(3)
+        driver = self.load_chrome()
+        self.warm_up(driver)
+
         seek_ids = self.job_ids
-        for id in seek_ids:
-            urlid = id[0]
-            salaryrange= id[1]
-            item = SeekItem()
-            item['salaryrange'] = salaryrange.rstrip("\r")
-            url = "https://www.seek.com.au/job/" + urlid
+        for job_id, salary_range in seek_ids:
             try:
-                driver.get(url)
-                element = driver.find_element_by_css_selector('div.templatetext')
-                text = element.text
-                print "############################"
-                print "###########TEXT#############"
-                print "############################"
-                # print text
-                # print "############################"
+                item = SeekItem()
+                item['salaryrange'] = salary_range.rstrip("\r")
+                driver.get('https://www.seek.com.au/job/{}'.format(job_id))
+                blocked = self.check_if_blocked(driver, job_id)
+                if blocked:
+                    driver.quit()
+                    driver = self.load_chrome()
+                    self.warm_up(driver)
+                    continue
 
-                ############################################
-                # EMAIL TELEPHONE PARSER
-                emails = []
-                telephone_numbers = []
+                item['text'] = self.find_element(driver, '//*[@data-automation="jobDescription"]')
+                item['advertiser_description'] = self.find_element(driver, '//*[@data-automation="advertiser-name"]')
+                item['title'] = self.find_element(driver, '//*[@data-automation="job-detail-title"]/span/h1')
+                item['workType'] = self.get_first_element(driver, '//section/dl/dd[3]/span/span')
+                item['suburbWhereValue'] = self.get_first_element(driver, '//dl/dd[2]/span/span/span')
+                item['area'] = self.get_first_element(driver, '//section/dl/dd[2]/span/span/span')
+                item['location'] = self.get_first_element(driver, '//dl/dd[2]/span/span/strong')
+                item['subClassification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/span')
+                item['classification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/strong')
+                # item['postCode']
+                # item['advertiser_id']
+                # item['areaWhereValue']
+                # item['id']
+                # item['listingDate']
+                # item['locationWhereValue']
+                # item['logo_ID']
+                # item['logo_description']
+                # item['salary']
 
-                re_email = r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+"
-                re1 = r'(0[1-8]{1,1} [0-9]{3,5} [0-9]{3,5})'
-                re2 = r'(\([0-9]{2,2}\).[0-9]{3,5}.[0-9]{3,5})'
-                re3 = r'\+61.[0-9]{1,1}.[0-9]{2,5}.[0-9]{2,5}.[0-9]{2,5}'
-
-                e1 = re.search(re_email, text, re.I)
-                if e1:
-                    emails.append(e1.group())
-                t1 = re.search(re1, text, re.I)
-                t2 = re.search(re2, text, re.I)
-                t3 = re.search(re3, text, re.I)
-                if t1:
-                    telephone_numbers.append(t1.group())
-                if t2:
-                    telephone_numbers.append(t2.group())
-                if t3:
-                    telephone_numbers.append(t3.group())
-                try:
-                    item['original_link_emails'] = emails[0]
-                except:
-                    item['original_link_emails'] = 'None'
-                try:
-                    item['original_link_telephones'] = telephone_numbers[0]
-                except:
-                    item['original_link_telephones'] = ''
+                if item['text']:
+                    item = self.phone_and_email_parser(item)
+                    yield item
             except TimeoutException:
-                with open('error.txt', 'a') as file:
+                with open('error_timeout.txt', 'a') as file:
                     file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
                     file.write("###################TIMEOUT MAIN Scraper##############")
                     file.write('\n')
                 driver.quit()
-                driver = self.loadchrome()
+                driver = self.load_chrome()
                 continue
             except:
                 traceback.print_exc()
-                text = ''
-                try:
-                    if "blocked access" in driver.page_source:
-                        print "###########################################################################"
-                        print "###########################################################################"
-                        print "###########################################################################"
-                        print "###########################################################################"
-                        print "###########################################################################"
-                        print "############################### GOT BLOCKED ###############################"
-                        print "###########################################################################"
-                        print "###########################################################################"
-                        print "###########################################################################"
-                        print "###########################################################################"
-
-                        with open('error.txt', 'a') as file:
-                            file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
-                            file.write(url)
-                            file.write('\n')
-                        driver.quit()
-                        driver = self.loadchrome()
-
-                except:
-                    traceback.print_exc()
-
-            item['text'] = text
-            item['url'] = url
-
-            apiurl = 'https://api.seek.com.au/v2/jobs/search?jobId={}'.format(urlid)
-            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-            print(apiurl)
-            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-            r = requests.get(apiurl)
-            created = False
-            if r.status_code == 200:
-                print("#######################################")
-                print("###########SUCCESSFUL REQUEST##########")
-                print("#######################################")
-                jsonresponse = r.json()
-                created, item = self.get_json(jsonresponse, item)
-            if created:
-                yield item
-            else:
-                with open('request_error.txt', 'a') as error_file:
-                    error_file.write(time.strftime('%d.%m %H:%M'))
-                    error_file.write(apiurl)
-                    error_file.write('\n')
-
-
-    def get_json(self, jsonresponse, item):
-        def level_1(attrname, item, data):
-            try:
-                item[attrname] = data[attrname]
-            except:
-                traceback.print_exc()
-        def level_2(attr1name, attr2name, attr3name, item, data):
-            try:
-                item[attr1name] = data[attr2name][attr3name]
-            except:
-                traceback.print_exc()
-        if jsonresponse['totalCount'] == 1:
-            data = jsonresponse['data'][0]
-
-            try:
-                postCodeInt = []
-                pcText = data['suburbWhereValue']
-                postcodere = r'(0[289][0-9]{2})|([1345689][0-9]{3})|(2[0-8][0-9]{2})|(290[0-9])|(291[0-4])|(7[0-4][0-9]{2})|(7[8-9][0-9]{2})$'
-                pcText = re.search(postcodere, pcText)
-                postCodeInt.append(pcText.group())
-                item['postCode'] = postCodeInt[0]
-            except:
-                item['postCode'] = ''
-            try:
-                item['teaser'] = data['teaser'].rstrip('\n').rstrip("\r").rstrip("\r").rstrip("\r")
-            except:
-                traceback.print_exc()
-
-            level_2('advertiser_description', 'advertiser', 'description', item, data)
-            level_2('advertiser_id', 'advertiser', 'id', item, data)
-            level_1('area', item, data)
-            level_1('areaWhereValue', item, data)
-            level_2('classification_description', 'classification', 'description', item, data)
-            level_1('id', item, data)
-            level_1('listingDate', item, data)
-            level_1('location', item, data)
-            level_1('locationWhereValue', item, data)
-            level_2('logo_ID', 'logo', 'id', item, data)
-            level_2('logo_description', 'logo', 'description', item, data)
-            level_1('salary', item, data)
-            level_2('subClassification_description', 'subClassification', 'description', item, data)
-            level_1('suburbWhereValue', item, data)
-            level_1('title', item, data)
-            level_1('workType', item, data)
-
-            return True, item
-        return False, item
+                driver.quit()
+                driver = self.load_chrome()
+                self.warm_up(driver)
