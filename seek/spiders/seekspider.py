@@ -18,7 +18,6 @@ example_job_list = [
     ("38292661", "payrange222"),
     ("38159962", "payrange222"),
     ("38151424", "payrange222"),
-
 ]
 
 DEBUG = False
@@ -162,6 +161,111 @@ class SeekScraper(scrapy.Spider):
         except:
             pass
 
+    def post_code_generator(self, location):
+        standardPostcode = [('Alice Springs & Central Australia', 872),
+                            ('Brisbane', 4000),
+                            ('Darwin', 800),
+                            ('Melbourne', 3000),
+                            ('Perth', 6000),
+                            ('Sydney', 2000),
+                            ('Katherine & Northern Australia', 850),
+                            ('Adelaide Hills & Barossa', 5131),
+                            ('Albany & Great Southern', 6316),
+                            ('Albury Wodonga & Murray', 2640),
+                            ('Albury Area', 2640),
+                            ('Adelaide', 5000),
+                            ('Canberra', 2600),
+                            ('Gold Coast', 4207),
+                            ('Hobart', 7000),
+                            ('Bairnsdale & Gippsland', 3847),
+                            ('Ballarat & Central Highlands', 3321),
+                            ('Bayside & Eastern Suburbs Brisbane', 4157),
+                            ('Bayside & South Eastern Suburbs Melbourne', 3145),
+                            ('Bendigo, Goldfields & Macedon Ranges', 3334),
+                            ('Blue Mountains & Central West', 2773),
+                            ('Brisbane CBD & Inner Suburbs Brisbane', 4000),
+                            ('Broome & Kimberley', 6725),
+                            ('Bunbury & South West', 6218),
+                            ('Bundaberg & Wide Bay Burnett', 4621),
+                            ('Cairns & Far North', 4849),
+                            ('Central & South East TAS', 7027),
+                            ('Coffs Harbour & North Coast', 2441),
+                            ('Coober Pedy & Outback SA', 5440),
+                            ('Devonport & North West', 7256),
+                            ('Dubbo & Central NSW', 2357),
+                            ('Eastern Suburbs Melbourne', 3101),
+                            ('Eastern Suburbs Perth', 6051),
+                            ('Far West & North Central NSW', 2386),
+                            ('Fleurieu Peninsula & Kangaroo Island', 5157),
+                            ('Fremantle & Southern Suburbs Perth', 6102),
+                            ('Geelong & Great Ocean Road', 3212),
+                            ('Geraldton, Gascoyne & Midwest', 6513),
+                            ('Gladstone & Central QLD', 4420),
+                            ('Gosford & Central Coast', 2083),
+                            ('Goulburn & Southern Tablelands', 2575),
+                            ('Southern Highlands & Tablelands', 2575),
+                            ('Hervey Bay & Fraser Coast', 4570),
+                            ('Horsham & Grampians', 3293),
+                            ('Kalgoorlie, Goldfields & Esperance', 6429),
+                            ('Launceston & North East', 7190),
+                            ('Lismore & Far North Coast', 2469),
+                            ('Mackay & Coalfields', 4705),
+                            ('Mandurah & Peel', 6121),
+                            ('Melbourne CBD & Inner Suburbs Melbourne', 3000),
+                            ('Mildura & Murray', 3490),
+                            ('Mornington Peninsula & Bass Coast', 3911),
+                            ('Mt Gambier & Limestone Coast', 5259),
+                            ('Mt Isa & Western', 4417),
+                            ('Newcastle, Maitland & Hunter', 2264),
+                            ('North Shore & Northern Beaches Sydney', 2060),
+                            ('North West & Hills District Sydney', 2077),
+                            ('Northam & Wheatbelt', 6041),
+                            ('Northern Suburbs & Joondalup Perth', 6017),
+                            ('Northern Suburbs Brisbane', 4019),
+                            ('Northern Suburbs Melbourne', 3043),
+                            ('Parramatta & Western Suburbs Sydney', 2116),
+                            ('Perth CBD, Inner & Western Suburbs Perth', 6000),
+                            ('Port Hedland, Karratha & Pilbara', 6710),
+                            ('Port Macquarie & Mid North Coast', 2424),
+                            ('Richmond & Hawkesbury', 2753),
+                            ('Riverland & Murray Mallee', 5236),
+                            ('Rockhampton & Capricorn Coast', 4699),
+                            ('Rockingham & Kwinana Perth', 6165),
+                            ('Ryde & Macquarie Park Sydney', 2112),
+                            ('Shepparton & Goulburn Valley', 3558),
+                            ('Somerset & Lockyer', 4311),
+                            ('South West & M5 Corridor Sydney', 2162),
+                            ('Southern Suburbs & Logan Brisbane', 4114),
+                            ('Southern Suburbs & Sutherland Shire Sydney', 2133),
+                            ('Sunshine Coast', 4517),
+                            ('Sydney CBD, Inner West & Eastern Suburbs Sydney', 2000),
+                            ('Tamworth & North West NSW', 2338),
+                            ('Toowoomba & Darling Downs', 4350),
+                            ('Townsville & Northern', 4800),
+                            ('Traralgon & La Trobe Valley', 3781),
+                            ('Tumut, Snowy & Monaro', 2621),
+                            ('Wagga Wagga & Riverina', 2590),
+                            ('Western Suburbs & Ipswich Brisbane', 4300),
+                            ('Western Suburbs Melbourne', 3011),
+                            ('Whyalla & Eyre Peninsula', 5600),
+                            ('Wollongong, Illawarra & South Coast', 2500),
+                            ('Yarra Valley & High Country', 3116),
+                            ('Yorke Peninsula & Clare Valley', 5374),
+                            ('South West Coast VIC', 3220),
+                            ('West Gippsland & Latrobe Valley', 3844),
+                            ('ACT', 2601)
+                            ]
+        found = False
+        for city, postcode in standardPostcode:
+            if location == city:
+                return postcode
+        if not found:
+            with open('error_postcode.txt', 'a') as file:
+                file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
+                file.write(city)
+                file.write('\n')
+        return ''
+
     def parse(self, response):
         driver = self.load_chrome()
         self.warm_up(driver)
@@ -188,7 +292,7 @@ class SeekScraper(scrapy.Spider):
                 item['location'] = self.get_first_element(driver, '//dl/dd[2]/span/span/strong')
                 item['subClassification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/span')
                 item['classification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/strong')
-                # item['postCode']
+                item['postCode'] = self.post_code_generator(item['location'])
                 # item['advertiser_id']
                 # item['areaWhereValue']
                 # item['id']
