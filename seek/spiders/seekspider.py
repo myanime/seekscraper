@@ -82,8 +82,8 @@ class SeekScraper(scrapy.Spider):
         seen = set()
         self.job_ids = [x for x in self.all_job_ids if x[0] not in seen and not seen.add(x[0])]
         print(self.job_ids)
-        with open('job_ids.txt', 'a') as file:
-            file.write(str(self.job_ids))
+        # with open('job_ids.txt', 'a') as file:
+        #     file.write(str(self.job_ids))
         time.sleep(30)
 
     def load_chrome(self):
