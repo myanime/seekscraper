@@ -295,12 +295,15 @@ class SeekScraper(scrapy.Spider):
                 item['postCode'] = self.post_code_generator(item['location'])
                 item['advertiser_id'] = ''
                 item['areaWhereValue'] = ''
-                item['id'] = ''
+                item['id'] = job_id
                 item['listingDate'] = ''
-                item['locationWhereValue'] = ''
+                item['locationWhereValue'] = item['location']
                 item['logo_ID'] = ''
                 item['logo_description'] = ''
                 item['salary'] = ''
+                item['teaser']=''
+                item['url']='https://www.seek.com.au/job/{}'.format(job_id)
+                #item['standardPostcode']=item['postCode']
 
                 if item['text']:
                     item = self.phone_and_email_parser(item)

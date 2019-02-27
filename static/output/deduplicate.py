@@ -15,5 +15,6 @@ df=json_normalize(seek)
 # df = df.sort('id')
 today=time.strftime('_%d_%m_%Y')
 filename='./transfer/seek_final{0}.csv'.format(today)
+df['standardPostcode']=df['postCode']
 # df_month_output_deduped.to_csv(filename, encoding='utf-8', index=False)
 df.to_csv(filename, encoding='utf-8', index=False)
