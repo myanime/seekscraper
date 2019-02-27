@@ -293,14 +293,14 @@ class SeekScraper(scrapy.Spider):
                 item['subClassification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/span')
                 item['classification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/strong')
                 item['postCode'] = self.post_code_generator(item['location'])
-                # item['advertiser_id']
-                # item['areaWhereValue']
-                # item['id']
-                # item['listingDate']
-                # item['locationWhereValue']
-                # item['logo_ID']
-                # item['logo_description']
-                # item['salary']
+                item['advertiser_id'] = ''
+                item['areaWhereValue'] = ''
+                item['id'] = ''
+                item['listingDate'] = ''
+                item['locationWhereValue'] = ''
+                item['logo_ID'] = ''
+                item['logo_description'] = ''
+                item['salary'] = ''
 
                 if item['text']:
                     item = self.phone_and_email_parser(item)
