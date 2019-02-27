@@ -253,7 +253,7 @@ class SeekScraper(scrapy.Spider):
                             ('Yorke Peninsula & Clare Valley', 5374),
                             ('South West Coast VIC', 3220),
                             ('West Gippsland & Latrobe Valley', 3844),
-                            ('ACT', 2601)
+                            ('ACT', 2601),
                             ]
         found = False
         for city, postcode in standardPostcode:
