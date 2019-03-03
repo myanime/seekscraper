@@ -124,7 +124,16 @@ for job_id, salary_range in example_job_list:
             continue
 
         item = {}
-
+        item['teaser'] = driver.find_element_by_xpath('/html/head/meta[4]').get_attribute('content')
+        # fake_api = driver.find_element_by_xpath('//*[@data-automation="server-state"]').get_attribute('innerHTML')
+        # decoded_fake_api = fake_api.encode('utf8').decode('unicode-escape').lstrip('\n window.SEEK_CONFIG=')
+        fake_api = driver.find_element_by_xpath('//*[@data-automation="server-state"]').get_attribute('innerHTML').split('SEEK_REDUX_DATA = ')[1].split('window.SK_DL')[0].rstrip(' ').rstrip('\n').rstrip(';')
+        import json
+        fake_api_dict = json.loads(fake_api)
+        city = json.loads(fake_api)['jobdetails']['result']['locationHierarchy']['city']
+        area = json.loads(fake_api)['jobdetails']['result']['locationHierarchy']['area']
+        suburb = json.loads(fake_api)['jobdetails']['result']['locationHierarchy']['suburb']
+        print(city,area,suburb,item['teaser'])
         item['text'] = find_element('//*[@data-automation="jobDescription"]')
         item['advertiser_description'] = find_element('//*[@data-automation="advertiser-name"]')
         item['title'] = find_element('//*[@data-automation="job-detail-title"]/span/h1')
@@ -135,6 +144,7 @@ for job_id, salary_range in example_job_list:
         item['location'] = get_first_element('//dl/dd[2]/span/span/strong')
         item['subClassification_description'] = get_first_element('//section/dl/div/dd/span/span/span')
         item['classification_description'] = get_first_element('//section/dl/div/dd/span/span/strong')
+
         # item['postCode']
         # item['advertiser_id']
         # item['areaWhereValue']

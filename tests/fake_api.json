@@ -1,0 +1,189 @@
+{
+  "dashboard": {
+    "savedSearches": null,
+    "savedJobs": null,
+    "recommendedJobs": null,
+    "ready": false,
+    "error": false,
+    "expand": false
+  },
+  "experiments": {
+    "4BE2547F-AF00-4A05-814B-3161A2757E5C": {
+      "name": "Single Column Serp v3",
+      "variation": {
+        "index": 0,
+        "name": "Control"
+      },
+      "_links": {
+        "conversion": {
+          "href": "\u002Fexperiments\u002F4BE2547F-AF00-4A05-814B-3161A2757E5C\u002Fvariations\u002F0\u002Fconversions"
+        },
+        "impression": {
+          "href": "\u002Fexperiments\u002F4BE2547F-AF00-4A05-814B-3161A2757E5C\u002Fvariations\u002F0\u002Fimpressions"
+        }
+      }
+    },
+    "A1A7F4E2-24EE-4F93-B349-5B310829934F": {
+      "name": "Create resumé wording",
+      "variation": {
+        "index": 2,
+        "name": "Need a new resumé?"
+      },
+      "_links": {
+        "conversion": {
+          "href": "\u002Fexperiments\u002FA1A7F4E2-24EE-4F93-B349-5B310829934F\u002Fvariations\u002F2\u002Fparticipants\u002Fe0103d4b47f58d22c28fc48d6b9eedc9\u002Fconversions"
+        },
+        "impression": {
+          "href": "\u002Fexperiments\u002FA1A7F4E2-24EE-4F93-B349-5B310829934F\u002Fvariations\u002F2\u002Fparticipants\u002Fe0103d4b47f58d22c28fc48d6b9eedc9\u002Fimpressions"
+        }
+      }
+    }
+  },
+  "featureFlags": {
+    "appInstallNative": false,
+    "cisClickToReveal": false,
+    "isTabFeatureFlag": false
+  },
+  "jobdetails": {
+    "fraudReport": {},
+    "jobPending": false,
+    "result": {
+      "id": 38344078,
+      "listingDate": "2019-02-13T10:25:01.000Z",
+      "expiryDate": "2019-03-15T10:25:00.000Z",
+      "title": "Inbound Customer Service Representative - Banking - Olympic Park",
+      "teaser": "Are you Passionate about Customer Service? Join one of Australia's biggest banks and kick start your career.",
+      "advertiser": {
+        "id": 36354930,
+        "description": "Tenacity CX",
+        "searchParams": {
+          "keywords": "Tenacity CX"
+        }
+      },
+      "locationHierarchy": {
+        "nation": "Australia",
+        "state": "New South Wales",
+        "city": "Sydney",
+        "area": "Parramatta & Western Suburbs",
+        "suburb": "sydneyolympicpark"
+      },
+      "workType": "Full Time",
+      "classification": {
+        "id": 1204,
+        "description": "Call Centre & Customer Service"
+      },
+      "subClassification": {
+        "id": 6085,
+        "description": "Customer Service - Call Centre"
+      },
+      "salary": null,
+      "automaticInclusion": false,
+      "isLinkOut": false,
+      "isScreenAssigned": false,
+      "isSelectionCriteriaEnabled": false,
+      "status": "Active",
+      "isRightToWorkRequired": true,
+      "hasRoleRequirements": true,
+      "roleRequirements": [
+        "Which of the following statements best describes your right to work in Australia?",
+        "Do you have customer service experience?",
+        "Have you worked in a call centre before?",
+        "Are you available to work on a rotating roster?"
+      ],
+      "desktopAdTemplate": "\u003Cmeta charset=\"utf-8\" \u002F\u003E\n\u003Cstyle type=\"text\u002Fcss\"\u003E\u003C!--#VideoJobAd,.videoembed{display:block;height:310px;padding:5px 0;text-align:center;width:100%}#jobadControl .videoembed{border:1px solid #ccc}.job-template__wrapper{font-size:12px;font-family:Helvetica,Arial,sans-serif;overflow:hidden;background-color:#fff;color:#404040;line-height:normal;box-sizing:content-box;width:460px;max-width:460px}.job-template__wrapper .details,.job-template__wrapper .jobtitle,.job-template__wrapper .subheading,.job-template__wrapper ul.templatebullet,.job-template__wrapper ul.templatebulletnormal{color:#1c1c1c;word-wrap:break-word}.job-template__wrapper .templatetext,.job-template__wrapper ul.templatebulletnormal{font-size:10pt;font-weight:400;word-wrap:break-word}.job-template__wrapper .jobtitle{font-size:20pt;font-weight:700}.job-template__wrapper .subheading{font-size:15pt;font-weight:700}.job-template__wrapper h1{font-size:26px;margin:18px 0;font-weight:400}.job-template__wrapper h2,.job-template__wrapper h3{font-size:14px;margin:18px 0;color:#0d3880;font-weight:700}.job-template__wrapper h3{margin:9px 0}.job-template__wrapper h4{font-size:12px;margin:9px 0}.job-template__wrapper b,.job-template__wrapper strong{font-weight:700}.job-template__wrapper em,.job-template__wrapper i{font-style:italic}.job-template__wrapper blockquote{margin:1em 40px}.job-template__wrapper td{vertical-align:middle}.job-template__wrapper .templatetext h2{font-size:21px;margin:0;color:#1c1c1c}.job-template__wrapper ul.templatebullet{font-size:9pt;font-weight:700}.job-template__wrapper .templatebullet li,.job-template__wrapper .templatebulletnormal li,.job-template__wrapper .templatetext li{list-style-position:outside;list-style:disc;margin-left:14px}.job-template__wrapper .templatetext ol,.job-template__wrapper .templatetext ul{margin-top:8px}.job-template__wrapper .templatetext ol li{list-style-position:outside;list-style:decimal;margin-left:20px}.job-template__wrapper .details{font-size:8pt;font-weight:400;word-wrap:break-word}.job-template__wrapper .tempmargin{margin:0 30px;padding:10px 0}.job-template__wrapper ul.templatebullet{margin:0 0 0 40px;padding:10px 0}.job-template__wrapper small{font-size:11px;font-weight:400;color:#636363}.job-template__wrapper a{text-decoration:none}.job-template__wrapper a:focus{outline:thin dotted}.job-template__wrapper a:active,.job-template__wrapper a:link,.job-template__wrapper a:visited{color:#2765cf}.job-template__wrapper hr{border:none;border-top:1px solid #dadada}.job-template__wrapper dl,.job-template__wrapper menu,.job-template__wrapper ol,.job-template__wrapper p,.job-template__wrapper ul{margin:9px 0}.job-template__wrapper menu,.job-template__wrapper ol,.job-template__wrapper ul,.job-template__wrapper ul li{padding:0}.job-template__wrapper [valign=top]{vertical-align:top}.job-template__wrapper sub,.job-template__wrapper sup{position:relative;vertical-align:baseline;line-height:0;font-size:9px}.job-template__wrapper sup{top:-.5em}.job-template__wrapper sub{bottom:-.25em}.job-template__wrapper .content{margin:0 11px;padding:15px 20px 35px;background:#fff;position:relative;z-index:3;top:4px;min-height:200px;margin-right:0}--\u003E\u003C\u002Fstyle\u003E\n\u003Cstyle type=\"text\u002Fcss\"\u003E\n\u003C!--\n.job-template__wrapper .tempborder { max-width: 458px; min-width: 280px; border: 1px solid #ff9517; text-align: left; font-family: Helvetica, Arial; }\n.job-template__wrapper .tempborder .templogo { text-align: center; padding: 0; font-size: 0; line-height: 0; }\n.job-template__wrapper .tempborder .tempmargin { margin: 0 20px; padding: 10px 0 20px }\n.job-template__wrapper .tempborder .jobtitle { color: #ff9517; text-align: center; margin: 0; padding: 10px 0; display: block; font-size: 24px; line-height: 1.5em }\n.job-template__wrapper .tempborder h2 { color: #ff9517!important; text-align: center; margin: 0; padding: 10px 0; display: block; font-size: 16px; line-height: 1.5em }\n.job-template__wrapper .tempborder .subheading { color: #000!important; text-align: center; margin: 0; padding: 10px 0; display: block; font-size: 16px; line-height: 1.5em }\n.job-template__wrapper .tempborder .templatebullet li { color: #000; text-align: left; margin-left: -25px!important; font-size: 13px; ; font-weight: bold; }\n.job-template__wrapper .tempborder .templatetext li { color: #000!important; text-align: left; margin-left: 15px; font-size: 13px }\n.job-template__wrapper .tempborder .templatetext, .job-template__wrapper .tempborder .templatetext p { color: #000; text-align: left; font-size: 13px; line-height: 1.3em }\n.job-template__wrapper .tempborder .details { color: #000; text-align: center; padding-top: 20px; font-size: 13px; line-height: 1.3em; }\n.job-template__wrapper .templatetext ol ul li { list-style-type: disc; }\n.job-template__wrapper .tempborder .tempbase { text-align: center; padding: 10px 0 40px; }\n--\u003E\n\u003C\u002Fstyle\u003E\n\u003Cdiv class=\"job-template__wrapper\"\u003E\n  \u003Cdiv class=\"tempborder\"\u003E\n    \u003Cdiv class=\"templogo\"\u003E\u003Cimg src=\"https:\u002F\u002Fseekcdn.com\u002Ftemplates\u002F36354930_1_top.jpg\" alt=\"\" \u002F\u003E\u003C\u002Fdiv\u003E\n    \u003Cdiv class=\"tempmargin\"\u003E\n      \u003Ch1 class=\"jobtitle\"\u003EInbound Customer Service Representative - Banking - Olympic Park \u003C\u002Fh1\u003E\n      \u003Cdiv class=\"templatetext\"\u003E\n        \u003Cp\u003ETenacity CX are Australia's leading supplier of recruitment solutions to the Customer Experience and Contact Centre industry. As a partner with a BIG4BANK we have multiple roles for experienced Customer Service representatives to\n          join a high performing &amp; driven team based in Olympic Park.\u003C\u002Fp\u003E\n        \u003Cp\u003E\u003Cstrong\u003EDuties Include:\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E\n        \u003Cul\u003E\n          \u003Cli\u003EManaging customer enquiries via Inbound telephone calls relating to a variety of Banking products.\u003C\u002Fli\u003E\n          \u003Cli\u003EProviding an exceptional customer experience in every interaction.\u003C\u002Fli\u003E\n          \u003Cli\u003EIdentifying customer needs through effective questioning &amp; active listening skills\u003C\u002Fli\u003E\n          \u003Cli\u003EManaging Client Records \u002F Data Entry\u003C\u002Fli\u003E\n          \u003Cli\u003EContribute and add value to the Customer Experience – Provide an exceptional service experience in each call.\u003C\u002Fli\u003E\n        \u003C\u002Ful\u003E\n        \u003Cp\u003E\u003Cstrong\u003ESkills &amp; attributes required:\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E\n        \u003Cul\u003E\n          \u003Cli\u003EDemonstrated Customer Service Experience.\u003C\u002Fli\u003E\n          \u003Cli\u003EExcellent Communication skills both written and verbal.\u003C\u002Fli\u003E\n          \u003Cli\u003ESolid work history in a customer facing role\u003C\u002Fli\u003E\n          \u003Cli\u003EProblem solving skills\u003C\u002Fli\u003E\n          \u003Cli\u003EAbility to work well in a team environment \u003C\u002Fli\u003E\n        \u003C\u002Ful\u003E\n        \u003Cp\u003E\u003Cstrong\u003EWhat's in it for you?\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E\n        \u003Cul\u003E\n          \u003Cli\u003EAttractive salary &amp; bonus\u002F team incentives\u003C\u002Fli\u003E\n          \u003Cli\u003EModern Office Environment with excellent facilities\u003C\u002Fli\u003E\n          \u003Cli\u003EWork for a BIG4BANK who value their people.\u003C\u002Fli\u003E\n          \u003Cli\u003EFull Training – learn &amp; grown over a 12-month period to become an expert in your field.\u003C\u002Fli\u003E\n          \u003Cli\u003ESalary starts at $27.55 + Super per hour\u003C\u002Fli\u003E\n        \u003C\u002Ful\u003E\n        \u003Cp\u003EThis is a full-time permanent role and you will be need to be available to work on a rotating roster. \u003C\u002Fp\u003E\n        \u003Cp\u003EDo not miss this unique opportunity – apply with your resume in Word format - we are interviewing immediately. \u003C\u002Fp\u003E\n      \u003C\u002Fdiv\u003E\n      \u003Cdiv class=\"details\"\u003E \u003C\u002Fdiv\u003E\n    \u003C\u002Fdiv\u003E\n    \u003Cdiv class=\"tempbase\"\u003E\u003Cimg src=\"https:\u002F\u002Fseekcdn.com\u002Ftemplates\u002F36354930_1_base.png\" alt=\"\" \u002F\u003E\u003C\u002Fdiv\u003E\n  \u003C\u002Fdiv\u003E\n\u003C\u002Fdiv\u003E",
+      "mobileAdTemplate": "\u003Cp\u003ETenacity CX are Australia's leading supplier of recruitment solutions to the Customer Experience and Contact Centre industry. As a partner with a BIG4BANK we have multiple roles for experienced Customer Service representatives to join a high performing &amp; driven team based in Olympic Park.\u003C\u002Fp\u003E \u003Cp\u003E\u003Cstrong\u003EDuties Include:\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E \u003Cul\u003E \u003Cli\u003EManaging customer enquiries via Inbound telephone calls relating to a variety of Banking products.\u003C\u002Fli\u003E \u003Cli\u003EProviding an exceptional customer experience in every interaction.\u003C\u002Fli\u003E \u003Cli\u003EIdentifying customer needs through effective questioning &amp; active listening skills\u003C\u002Fli\u003E \u003Cli\u003EManaging Client Records \u002F Data Entry\u003C\u002Fli\u003E \u003Cli\u003EContribute and add value to the Customer Experience – Provide an exceptional service experience in each call.\u003C\u002Fli\u003E\u003C\u002Ful\u003E \u003Cp\u003E\u003Cstrong\u003ESkills &amp; attributes required:\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E \u003Cul\u003E \u003Cli\u003EDemonstrated Customer Service Experience.\u003C\u002Fli\u003E \u003Cli\u003EExcellent Communication skills both written and verbal.\u003C\u002Fli\u003E \u003Cli\u003ESolid work history in a customer facing role\u003C\u002Fli\u003E \u003Cli\u003EProblem solving skills\u003C\u002Fli\u003E \u003Cli\u003EAbility to work well in a team environment \u003C\u002Fli\u003E\u003C\u002Ful\u003E \u003Cp\u003E\u003Cstrong\u003EWhat's in it for you?\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E \u003Cul\u003E \u003Cli\u003EAttractive salary &amp; bonus\u002F team incentives\u003C\u002Fli\u003E \u003Cli\u003EModern Office Environment with excellent facilities\u003C\u002Fli\u003E \u003Cli\u003EWork for a BIG4BANK who value their people.\u003C\u002Fli\u003E \u003Cli\u003EFull Training – learn &amp; grown over a 12-month period to become an expert in your field.\u003C\u002Fli\u003E \u003Cli\u003ESalary starts at $27.55 + Super per hour\u003C\u002Fli\u003E\u003C\u002Ful\u003E \u003Cp\u003EThis is a full-time permanent role and you will be need to be available to work on a rotating roster. \u003C\u002Fp\u003E \u003Cp\u003EDo not miss this unique opportunity – apply with your resume in Word format - we are interviewing immediately. \u003C\u002Fp\u003E",
+      "companyReview": null,
+      "contactMatches": [],
+      "hasCustomTemplate": true,
+      "roleTitles": "inbound-customer-service-representative,customer-service-representative-csr,service-representative,customer-service-role,representative_2",
+      "isPrivateAdvertiser": false
+    },
+    "pageLoadedCount": 0
+  },
+  "joblistitem": {
+    "impressionToken": ""
+  },
+  "lastSearch": {
+    "query": null,
+    "where": ""
+  },
+  "lmis": {
+    "content": "",
+    "lmisType": "fallback",
+    "lmisContextType": "fallback"
+  },
+  "location": {
+    "url": "https:\u002F\u002Fwww.seek.com.au\u002Fjob\u002F38344078",
+    "locale": "AU",
+    "pathname": "\u002Fjob\u002F38344078",
+    "prevPathname": null,
+    "query": {},
+    "pageNumber": 1,
+    "isHomepage": false,
+    "pageTitle": "Inbound Customer Service Representative - Banking - Olympic Park",
+    "hostname": "www.seek.com.au",
+    "href": "https:\u002F\u002Fwww.seek.com.au\u002Fjob\u002F38344078",
+    "port": "",
+    "protocol": "https:",
+    "hash": ""
+  },
+  "nudges": {
+    "nudges": [],
+    "currentNudgeIndex": 0,
+    "nudgePostError": false
+  },
+  "results": {
+    "results": null,
+    "isLoading": false,
+    "isError": false,
+    "source": "",
+    "canonicalCompany": null,
+    "companySuggestion": null,
+    "location": null,
+    "locationWhere": null,
+    "title": "",
+    "totalCount": null,
+    "jobIds": [],
+    "pagination": null,
+    "paginationParameters": {},
+    "sortMode": null,
+    "hidden": false,
+    "relatedSearches": []
+  },
+  "savedJobs": {
+    "jobs": {}
+  },
+  "saveSearch": {
+    "emailAddress": "",
+    "errorMessage": "",
+    "saveable": true,
+    "status": "UNSAVED",
+    "title": ""
+  },
+  "search": {
+    "keywordsField": "",
+    "whereField": "",
+    "query": {},
+    "lastQuery": {},
+    "hasLoadedCounts": false,
+    "refinements": null,
+    "activeRefinement": null,
+    "whereSuggestions": []
+  },
+  "seo": {
+    "metaDescription": "SEEK is Australia’s number one employment marketplace. Find jobs and career related information or recruit the ideal candidate. Why settle? SEEK",
+    "canonicalUrl": "https:\u002F\u002Fwww.seek.com.au\u002Fjob\u002F38344078",
+    "partners": {
+      "canCrossLink": false
+    }
+  },
+  "user": {
+    "authenticated": false,
+    "firstName": "",
+    "emailAddress": ""
+  },
+  "fitme": {
+    "showTopApplicantBadge": false
+  },
+  "@@redux-hotjar-state": []
+}

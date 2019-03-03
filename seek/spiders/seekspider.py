@@ -266,6 +266,22 @@ class SeekScraper(scrapy.Spider):
                 file.write('\n')
         return ''
 
+    def get_teaser(self, driver):
+        try:
+            return driver.find_element_by_xpath('/html/head/meta[4]').get_attribute('content')
+        except:
+            return ''
+
+    def fake_api(self, driver):
+        import json
+        try:
+            fake_api = driver.find_element_by_xpath('//*[@data-automation="server-state"]').get_attribute('innerHTML')
+            fake_api_split = fake_api.split('SEEK_REDUX_DATA = ')[1].split('window.SK_DL')[0].rstrip(' ').rstrip('\n').rstrip(';')
+            fake_api_dict = json.loads(fake_api_split)
+            return fake_api_dict
+        except:
+            pass
+
     def parse(self, response):
         driver = self.load_chrome()
         self.warm_up(driver)
@@ -287,22 +303,50 @@ class SeekScraper(scrapy.Spider):
                 item['advertiser_description'] = self.find_element(driver, '//*[@data-automation="advertiser-name"]')
                 item['title'] = self.find_element(driver, '//*[@data-automation="job-detail-title"]/span/h1')
                 item['workType'] = self.get_first_element(driver, '//section/dl/dd[3]/span/span')
-                item['suburbWhereValue'] = self.get_first_element(driver, '//dl/dd[2]/span/span/span')
                 item['area'] = self.get_first_element(driver, '//section/dl/dd[2]/span/span/span')
                 item['location'] = self.get_first_element(driver, '//dl/dd[2]/span/span/strong')
                 item['subClassification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/span')
                 item['classification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/strong')
                 item['postCode'] = self.post_code_generator(item['location'])
-                item['advertiser_id'] = ''
-                item['areaWhereValue'] = ''
+
+                api_info = self.fake_api(driver)
+                try:
+                    area = api_info['jobdetails']['result']['locationHierarchy']['area']
+                except:
+                    area = ''
+                try:
+                    suburb = api_info['jobdetails']['result']['locationHierarchy']['suburb']
+                except:
+                    suburb = ''
+                try:
+                    state = api_info['jobdetails']['result']['locationHierarchy']['state']
+                except:
+                    state = ''
+                try:
+                    salary = api_info['jobdetails']['result']['salary']
+                except:
+                    salary = ''
+                try:
+                    listing_date = api_info['jobdetails']['result']['listingDate']
+                except:
+                    listing_date = ''
+                try:
+                    advertiser_id = api_info['jobdetails']['result']['advertiser']['id']
+                except:
+                    advertiser_id = ''
+
+                item['locationWhereValue'] = state
+                item['suburbWhereValue'] = suburb
+                item['areaWhereValue'] = area
+
+                item['advertiser_id'] = advertiser_id
                 item['id'] = job_id
-                item['listingDate'] = ''
-                item['locationWhereValue'] = item['location']
+                item['listingDate'] = listing_date
                 item['logo_ID'] = ''
                 item['logo_description'] = ''
-                item['salary'] = ''
-                item['teaser']=''
-                item['url']='https://www.seek.com.au/job/{}'.format(job_id)
+                item['salary'] = salary
+                item['teaser'] = self.get_teaser(driver)
+                item['url'] = 'https://www.seek.com.au/job/{}'.format(job_id)
                 #item['standardPostcode']=item['postCode']
 
                 if item['text']:
