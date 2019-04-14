@@ -57,9 +57,10 @@ class SeekScraper(scrapy.Spider):
                         file.write(time.strftime('%d.%m %H:%M'))
                         file.write("###################TIMEOUT##############")
                         file.write('\n')
-                    driver.quit()
-                    driver = self.load_chrome()
-                    continue
+                    # driver.quit()
+                    # driver = self.load_chrome()
+                    driver.execute_script("window.stop();")
+                    # continue
 
                 if "we couldn't find anything" in driver.page_source:
                     print("Moving on to next salary level")
@@ -70,20 +71,24 @@ class SeekScraper(scrapy.Spider):
                     driver = self.load_chrome()
                     self.warm_up(driver)
                     continue
-                links = driver.find_elements_by_xpath("//span/h1/a")
 
-                for link in links:
-                    job = link.get_attribute('href')
-                    job = job.split('/job/')[1]
-                    job = job.split('?')[0]
-                    self.all_job_ids.append((job, salary_range_string))
-                    print(job, salary_range_string)
+                try:
+                    links = driver.find_elements_by_xpath("//span/h1/a")
+
+                    for link in links:
+                        job = link.get_attribute('href')
+                        job = job.split('/job/')[1]
+                        job = job.split('?')[0]
+                        self.all_job_ids.append((job, salary_range_string))
+                        print(job, salary_range_string)
+                except:
+                    continue
 
         seen = set()
         self.job_ids = [x for x in self.all_job_ids if x[0] not in seen and not seen.add(x[0])]
         print(self.job_ids)
-        # with open('job_ids.txt', 'a') as file:
-        #     file.write(str(self.job_ids))
+        with open('job_ids.txt', 'a') as file:
+            file.write(str(self.job_ids))
         time.sleep(30)
 
     def load_chrome(self):
@@ -94,9 +99,9 @@ class SeekScraper(scrapy.Spider):
     def check_if_blocked(self, driver, job_id):
         try:
             if "blocked access" in driver.page_source:
-                print "###########################################################################"
-                print "############################### GOT BLOCKED ###############################"
-                print "###########################################################################"
+                print("###########################################################################")
+                print("############################### GOT BLOCKED ###############################")
+                print("###########################################################################")
                 with open('error_blocked.txt', 'a') as file:
                     file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
                     file.write(job_id)
@@ -282,6 +287,61 @@ class SeekScraper(scrapy.Spider):
         except:
             pass
 
+    def extract_data(self, driver, job_id, item):
+        item['text'] = self.find_element(driver, '//*[@data-automation="jobDescription"]')
+        item['advertiser_description'] = self.find_element(driver, '//*[@data-automation="advertiser-name"]')
+        item['title'] = self.find_element(driver, '//*[@data-automation="job-detail-title"]/span/h1')
+        item['workType'] = self.get_first_element(driver, '//section/dl/dd[3]/span/span')
+        item['area'] = self.get_first_element(driver, '//section/dl/dd[2]/span/span/span')
+        item['location'] = self.get_first_element(driver, '//dl/dd[2]/span/span/strong')
+        item['subClassification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/span')
+        item['classification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/strong')
+        item['postCode'] = self.post_code_generator(item['location'])
+
+        api_info = self.fake_api(driver)
+        try:
+            area = api_info['jobdetails']['result']['locationHierarchy']['area']
+        except:
+            area = ''
+        try:
+            suburb = api_info['jobdetails']['result']['locationHierarchy']['suburb']
+        except:
+            suburb = ''
+        try:
+            state = api_info['jobdetails']['result']['locationHierarchy']['state']
+        except:
+            state = ''
+        try:
+            salary = api_info['jobdetails']['result']['salary']
+        except:
+            salary = ''
+        try:
+            listing_date = api_info['jobdetails']['result']['listingDate']
+        except:
+            listing_date = ''
+        try:
+            advertiser_id = api_info['jobdetails']['result']['advertiser']['id']
+        except:
+            advertiser_id = ''
+
+        item['locationWhereValue'] = state
+        item['suburbWhereValue'] = suburb
+        item['areaWhereValue'] = area
+
+        item['advertiser_id'] = advertiser_id
+        item['id'] = job_id
+        item['listingDate'] = listing_date
+        item['logo_ID'] = ''
+        item['logo_description'] = ''
+        item['salary'] = salary
+        item['teaser'] = self.get_teaser(driver)
+        item['url'] = 'https://www.seek.com.au/job/{}'.format(job_id)
+        # item['standardPostcode']=item['postCode']
+
+        if item['text']:
+            item = self.phone_and_email_parser(item)
+        return item
+
     def parse(self, response):
         driver = self.load_chrome()
         self.warm_up(driver)
@@ -291,6 +351,7 @@ class SeekScraper(scrapy.Spider):
             try:
                 item = SeekItem()
                 item['salaryrange'] = salary_range.rstrip("\r")
+                driver.set_page_load_timeout(10)
                 driver.get('https://www.seek.com.au/job/{}'.format(job_id))
                 blocked = self.check_if_blocked(driver, job_id)
                 if blocked:
@@ -299,68 +360,27 @@ class SeekScraper(scrapy.Spider):
                     self.warm_up(driver)
                     continue
 
-                item['text'] = self.find_element(driver, '//*[@data-automation="jobDescription"]')
-                item['advertiser_description'] = self.find_element(driver, '//*[@data-automation="advertiser-name"]')
-                item['title'] = self.find_element(driver, '//*[@data-automation="job-detail-title"]/span/h1')
-                item['workType'] = self.get_first_element(driver, '//section/dl/dd[3]/span/span')
-                item['area'] = self.get_first_element(driver, '//section/dl/dd[2]/span/span/span')
-                item['location'] = self.get_first_element(driver, '//dl/dd[2]/span/span/strong')
-                item['subClassification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/span')
-                item['classification_description'] = self.get_first_element(driver, '//section/dl/div/dd/span/span/strong')
-                item['postCode'] = self.post_code_generator(item['location'])
+                item = self.extract_data(driver, job_id, item)
 
-                api_info = self.fake_api(driver)
-                try:
-                    area = api_info['jobdetails']['result']['locationHierarchy']['area']
-                except:
-                    area = ''
-                try:
-                    suburb = api_info['jobdetails']['result']['locationHierarchy']['suburb']
-                except:
-                    suburb = ''
-                try:
-                    state = api_info['jobdetails']['result']['locationHierarchy']['state']
-                except:
-                    state = ''
-                try:
-                    salary = api_info['jobdetails']['result']['salary']
-                except:
-                    salary = ''
-                try:
-                    listing_date = api_info['jobdetails']['result']['listingDate']
-                except:
-                    listing_date = ''
-                try:
-                    advertiser_id = api_info['jobdetails']['result']['advertiser']['id']
-                except:
-                    advertiser_id = ''
+                yield item
 
-                item['locationWhereValue'] = state
-                item['suburbWhereValue'] = suburb
-                item['areaWhereValue'] = area
-
-                item['advertiser_id'] = advertiser_id
-                item['id'] = job_id
-                item['listingDate'] = listing_date
-                item['logo_ID'] = ''
-                item['logo_description'] = ''
-                item['salary'] = salary
-                item['teaser'] = self.get_teaser(driver)
-                item['url'] = 'https://www.seek.com.au/job/{}'.format(job_id)
-                #item['standardPostcode']=item['postCode']
-
-                if item['text']:
-                    item = self.phone_and_email_parser(item)
-                    yield item
             except TimeoutException:
                 with open('error_timeout.txt', 'a') as file:
                     file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
                     file.write("###################TIMEOUT MAIN Scraper##############")
                     file.write('\n')
-                driver.quit()
-                driver = self.load_chrome()
+                # driver.quit()
+                # driver = self.load_chrome()
+                driver.execute_script("window.stop();")
+
+                try:
+                    item = self.extract_data(driver, job_id, item)
+                    yield item
+                except TimeoutException:
+                    continue
                 continue
-            except:
+            except Exception as e:
+                raise e
                 traceback.print_exc()
                 driver.quit()
                 driver = self.load_chrome()
