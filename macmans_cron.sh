@@ -2,6 +2,7 @@
 echo "Poor Mans Cron"
 sleep 5
 echo "Starting"
+sleep 36000
 osascript -e 'tell application "Terminal" to do script "/Users/ryan/repos/seekscraper/local_seek.sh"'
 
 while true

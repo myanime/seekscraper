@@ -50,7 +50,8 @@ class SeekScraper(scrapy.Spider):
                 # current_page = 'https://www.seek.com.au/jobs/in-All-Australia?daterange=1&salaryrange=0-100000&salarytype=annual&page=1'
                 try:
                     driver.get(current_page)
-                    time.sleep(5)
+                    time.sleep(2)
+                    driver.execute_script("window.stop();")
                     print(current_page)
                 except TimeoutException:
                     with open('error_timeout.txt', 'a') as file:
@@ -60,7 +61,7 @@ class SeekScraper(scrapy.Spider):
                     # driver.quit()
                     # driver = self.load_chrome()
                     driver.execute_script("window.stop();")
-                    # continue
+                    continue
 
                 if "we couldn't find anything" in driver.page_source:
                     print("Moving on to next salary level")
@@ -86,7 +87,7 @@ class SeekScraper(scrapy.Spider):
 
         seen = set()
         self.job_ids = [x for x in self.all_job_ids if x[0] not in seen and not seen.add(x[0])]
-        print(self.job_ids)
+        # print(self.job_ids)
         with open('job_ids.txt', 'a') as file:
             file.write(str(self.job_ids))
         time.sleep(30)
@@ -347,7 +348,19 @@ class SeekScraper(scrapy.Spider):
         self.warm_up(driver)
 
         seek_ids = self.job_ids
+        original_count = len(seek_ids)
+        count = len(seek_ids)
         for job_id, salary_range in seek_ids:
+            print("##########################")
+            print("##########################")
+            print("######## COUNT ###########")
+            print("{}/{}".format(count, original_count))
+            count=count-1
+            print("##########################")
+            print("##########################")
+            print("##########################")
+            print("##########################")
+            print("##########################")
             try:
                 item = SeekItem()
                 item['salaryrange'] = salary_range.rstrip("\r")
@@ -371,17 +384,18 @@ class SeekScraper(scrapy.Spider):
                     file.write('\n')
                 # driver.quit()
                 # driver = self.load_chrome()
-                driver.execute_script("window.stop();")
 
                 try:
+                    time.sleep(5)
+                    driver.execute_script("window.stop();")
                     item = self.extract_data(driver, job_id, item)
                     yield item
-                except TimeoutException:
+                except:
                     continue
                 continue
             except Exception as e:
-                raise e
                 traceback.print_exc()
-                driver.quit()
-                driver = self.load_chrome()
-                self.warm_up(driver)
+                # driver.execute_script("window.stop();")
+                # driver.quit()
+                # driver = self.load_chrome()
+                # self.warm_up(driver)
