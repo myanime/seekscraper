@@ -291,6 +291,10 @@ class SeekScraper(scrapy.Spider):
     def extract_data(self, driver, job_id, item):
         item['text'] = self.find_element(driver, '//*[@data-automation="jobDescription"]')
         item['advertiser_description'] = self.find_element(driver, '//*[@data-automation="advertiser-name"]')
+        if not item['advertiser_description']:
+            item['advertiser_description'] = self.find_element(driver, '//*[@data-automation="job-header-company-review-title"]')
+        if not item['advertiser_description']:
+            item['advertiser_description'] = u'Private Advertiser'
         item['title'] = self.find_element(driver, '//*[@data-automation="job-detail-title"]/span/h1')
         item['workType'] = self.get_first_element(driver, '//section/dl/dd[3]/span/span')
         item['area'] = self.get_first_element(driver, '//section/dl/dd[2]/span/span/span')
