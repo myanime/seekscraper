@@ -60,7 +60,7 @@ class SeekScraper(scrapy.Spider):
                         file.write('\n')
                     # driver.quit()
                     # driver = self.load_chrome()
-                    driver.execute_script("window.stop();")
+                    # driver.execute_script("window.stop();")
                     continue
 
                 if "we couldn't find anything" in driver.page_source:
