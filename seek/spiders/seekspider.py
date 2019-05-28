@@ -51,17 +51,20 @@ class SeekScraper(scrapy.Spider):
                 try:
                     driver.get(current_page)
                     time.sleep(2)
-                    driver.execute_script("window.stop();")
-                    print(current_page)
+                    # driver.execute_script("window.stop();")
+                    # print(current_page)
                 except TimeoutException:
                     with open('error_timeout.txt', 'a') as file:
                         file.write(time.strftime('%d.%m %H:%M'))
                         file.write("###################TIMEOUT##############")
                         file.write('\n')
-                    # driver.quit()
-                    # driver = self.load_chrome()
+                    driver.quit()
+                    driver = self.load_chrome()
                     # driver.execute_script("window.stop();")
                     continue
+                except:
+                    driver.quit()
+                    driver = self.load_chrome()
 
                 if "we couldn't find anything" in driver.page_source:
                     print("Moving on to next salary level")
