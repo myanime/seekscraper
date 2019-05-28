@@ -56,7 +56,7 @@ class SeekScraper(scrapy.Spider):
                 except TimeoutException:
                     with open('error_timeout.txt', 'a') as file:
                         file.write(time.strftime('%d.%m %H:%M'))
-                        file.write("###################TIMEOUT##############")
+                        file.write("###################TIMEOUT ID GETTER##############")
                         file.write('\n')
                     driver.quit()
                     driver = self.load_chrome()
@@ -389,20 +389,25 @@ class SeekScraper(scrapy.Spider):
                     file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
                     file.write("###################TIMEOUT MAIN Scraper##############")
                     file.write('\n')
-                # driver.quit()
-                # driver = self.load_chrome()
+                driver.quit()
+                driver = self.load_chrome()
 
-                try:
-                    time.sleep(5)
-                    driver.execute_script("window.stop();")
-                    item = self.extract_data(driver, job_id, item)
-                    yield item
-                except:
-                    continue
+                # try:
+                    # time.sleep(5)
+                    # driver.execute_script("window.stop();")
+                    # item = self.extract_data(driver, job_id, item)
+                    # yield item
+                # except:
+                #     continue
                 continue
             except Exception as e:
+                with open('error_timeout.txt', 'a') as file:
+                    file.write(time.strftime('Day:%d Month:%m Time: %H:%M -'))
+                    file.write("###################EXCEPTION Scraper##############")
+                    file.write(traceback.format_exc())
+                    file.write('\n')
                 traceback.print_exc()
                 # driver.execute_script("window.stop();")
-                # driver.quit()
-                # driver = self.load_chrome()
-                # self.warm_up(driver)
+                driver.quit()
+                driver = self.load_chrome()
+                self.warm_up(driver)
