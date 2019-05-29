@@ -53,6 +53,29 @@ class SeekScraper(scrapy.Spider):
                     time.sleep(2)
                     # driver.execute_script("window.stop();")
                     # print(current_page)
+
+                    if "we couldn't find anything" in driver.page_source:
+                        print("Moving on to next salary level")
+                        break
+                    blocked = self.check_if_blocked(driver, 'getting ids')
+                    if blocked:
+                        driver.quit()
+                        driver = self.load_chrome()
+                        self.warm_up(driver)
+                        continue
+
+                    try:
+                        links = driver.find_elements_by_xpath("//span/h1/a")
+
+                        for link in links:
+                            job = link.get_attribute('href')
+                            job = job.split('/job/')[1]
+                            job = job.split('?')[0]
+                            self.all_job_ids.append((job, salary_range_string))
+                            print(job, salary_range_string)
+                    except:
+                        continue
+
                 except TimeoutException:
                     with open('error_timeout.txt', 'a') as file:
                         file.write(time.strftime('%d.%m %H:%M'))
@@ -65,28 +88,6 @@ class SeekScraper(scrapy.Spider):
                 except:
                     driver.quit()
                     driver = self.load_chrome()
-
-                if "we couldn't find anything" in driver.page_source:
-                    print("Moving on to next salary level")
-                    break
-                blocked = self.check_if_blocked(driver, 'getting ids')
-                if blocked:
-                    driver.quit()
-                    driver = self.load_chrome()
-                    self.warm_up(driver)
-                    continue
-
-                try:
-                    links = driver.find_elements_by_xpath("//span/h1/a")
-
-                    for link in links:
-                        job = link.get_attribute('href')
-                        job = job.split('/job/')[1]
-                        job = job.split('?')[0]
-                        self.all_job_ids.append((job, salary_range_string))
-                        print(job, salary_range_string)
-                except:
-                    continue
 
         seen = set()
         self.job_ids = [x for x in self.all_job_ids if x[0] not in seen and not seen.add(x[0])]

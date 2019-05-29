@@ -1,9 +1,9 @@
 echo "start:" >> ./runcounter
 date >> ./runcounter
-PROJECT_DIR='/Users/ryan/repos/seekscraper'
-AWS_KEY="/Users/ryan/.ssh/aws_schlupfi.pem"
-#PROJECT_DIR='/home/myanime/seekscraper'
-#AWS_KEY="/home/myanime/.ssh/aws_schlupfi.pem"
+#PROJECT_DIR='/Users/ryan/repos/seekscraper'
+#AWS_KEY="/Users/ryan/.ssh/aws_schlupfi.pem"
+PROJECT_DIR='/home/myanime/seekscraper'
+AWS_KEY="/home/myanime/.ssh/aws_schlupfi.pem"
 MYDATE=$(date +"%d_%m_%Y")
 
 cd $PROJECT_DIR/static/
