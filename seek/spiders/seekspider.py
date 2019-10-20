@@ -392,6 +392,7 @@ class SeekScraper(scrapy.Spider):
                     file.write('\n')
                 driver.quit()
                 driver = self.load_chrome()
+                self.warm_up(driver)
 
                 # try:
                     # time.sleep(5)
