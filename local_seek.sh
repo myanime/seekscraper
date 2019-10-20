@@ -13,8 +13,8 @@ sleep 5
 echo Starting_Scrapy
 cd $PROJECT_DIR/
 echo "DELETING STUFF"
-mv /home/myanime/seekscraper/job_ids.txt /home/myanime/seekscraper/job_ids$MYDATE.txt
-touch /home/myanime/seekscraper/job_ids.txt
+#mv /home/myanime/seekscraper/job_ids.txt /home/myanime/seekscraper/job_ids$MYDATE.txt
+#touch /home/myanime/seekscraper/job_ids.txt
 mkdir $PROJECT_DIR/static/output/transfer
 mkdir $PROJECT_DIR/static/output/history
 mv $PROJECT_DIR/static/output/seek.json $PROJECT_DIR/static/output/history/backup_$MYDATE.json
