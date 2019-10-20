@@ -161,6 +161,14 @@ class SeekScraper(scrapy.Spider):
         except:
             pass
 
+    def get_branding_icon(self, driver):
+        try:
+            return driver.find_element_by_xpath('//*[@data-automation="brandingLogo"]').get_attribute('style').replace('background-image: url("','').replace('");','')
+        except NoSuchElementException:
+            return ''
+        except:
+            return ''
+
     def find_element(self, driver, xpath):
         try:
             element = driver.find_element_by_xpath(xpath)
@@ -294,6 +302,7 @@ class SeekScraper(scrapy.Spider):
 
     def extract_data(self, driver, job_id, item):
         item['text'] = self.find_element(driver, '//*[@data-automation="jobDescription"]')
+        item['logo_description'] = self.get_branding_icon(driver)
         item['advertiser_description'] = self.find_element(driver, '//*[@data-automation="advertiser-name"]')
         if not item['advertiser_description']:
             item['advertiser_description'] = self.find_element(driver, '//*[@data-automation="job-header-company-review-title"]')
@@ -341,7 +350,6 @@ class SeekScraper(scrapy.Spider):
         item['id'] = job_id
         item['listingDate'] = listing_date
         item['logo_ID'] = ''
-        item['logo_description'] = ''
         item['salary'] = salary
         item['teaser'] = self.get_teaser(driver)
         item['url'] = 'https://www.seek.com.au/job/{}'.format(job_id)
