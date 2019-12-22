@@ -6,7 +6,7 @@ boto==2.40.0
 cffi==1.10.0
 chardet==2.3.0
 constantly==15.1.0
-cryptography==1.9
+cryptography==2.3
 cssselect==1.0.1
 decorator==4.0.6
 Django==1.8.7
