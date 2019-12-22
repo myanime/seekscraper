@@ -9,15 +9,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from seek.items import SeekItem
 
 example_job_list = [
-    ("38226458", "payrange222"),
-    ("38341779", "payrange222"),
-    ("38273443", "payrange222"),
-    ("38316054", "payrange222"),
-    ("38295104", "payrange222"),
-    ("38302885", "payrange222"),
-    ("38292661", "payrange222"),
-    ("38159962", "payrange222"),
-    ("38151424", "payrange222"),
+    ("40459361", "payrange222"),
 ]
 
 DEBUG = False
@@ -97,7 +89,10 @@ class SeekScraper(scrapy.Spider):
         time.sleep(30)
 
     def load_chrome(self):
-        driver = webdriver.Chrome("./chromedriver")
+        if DEBUG:
+            driver = webdriver.Chrome("./chromedrivermac")
+        else:
+            driver = webdriver.Chrome("./chromedriver")
         driver.set_page_load_timeout(10)
         return driver
 
@@ -295,9 +290,12 @@ class SeekScraper(scrapy.Spider):
         try:
             fake_api = driver.find_element_by_xpath('//*[@data-automation="server-state"]').get_attribute('innerHTML')
             fake_api_split = fake_api.split('SEEK_REDUX_DATA = ')[1].split('window.SK_DL')[0].rstrip(' ').rstrip('\n').rstrip(';')
-            fake_api_dict = json.loads(fake_api_split)
+            import demjson
+            fake_api_dict = demjson.decode(fake_api_split)
+            # fake_api_dict = json.loads(fake_api_split)
             return fake_api_dict
-        except:
+        except Exception as e:
+            print(e)
             pass
 
     def extract_data(self, driver, job_id, item):
