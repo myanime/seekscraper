@@ -46,6 +46,6 @@ simplegeneric==0.8.1
 six==1.10.0
 sqlparse==0.1.18
 Twisted==16.4.1
-urllib3==1.15.1
+urllib3==1.26.5
 w3lib==1.17.0
 zope.interface==4.4.1
