@@ -39,7 +39,7 @@ python-dateutil==2.6.0
 pytz==2017.2
 queuelib==1.4.2
 requests==2.10.0
-Scrapy==1.4.0
+Scrapy==2.6.1
 selenium==2.53.2
 service-identity==17.0.0
 simplegeneric==0.8.1
