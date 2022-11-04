@@ -45,7 +45,7 @@ service-identity==17.0.0
 simplegeneric==0.8.1
 six==1.10.0
 sqlparse==0.1.18
-Twisted==16.4.1
+Twisted==22.10.0
 urllib3==1.15.1
 w3lib==1.17.0
 zope.interface==4.4.1
